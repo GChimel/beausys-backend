@@ -12,7 +12,6 @@ interface IUserInfoResponse {
   verifiedEmail: string;
   firstName: string;
   lastName: string;
-  avatar: string;
   googleId: string;
 }
 
@@ -54,7 +53,6 @@ export class GoogleApis {
       verifiedEmail: data.verified_email,
       firstName: data.given_name,
       lastName: data.family_name,
-      avatar: data.picture,
       googleId: data.id,
     };
   }
