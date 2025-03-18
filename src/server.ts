@@ -3,6 +3,7 @@ import FastifyJWT from "@fastify/jwt";
 import Fastify from "fastify";
 import { ZodError } from "zod";
 import { ENV_VARS } from "./app/config/env";
+import { privateRoutes, publicRoutes } from "./app/routes";
 
 const app = Fastify();
 
@@ -18,9 +19,13 @@ app.register(FastifyCORS);
 app.register(FastifyJWT, {
   secret: jwtSecret,
   sign: {
-    expiresIn: jwtExpiresIn,
+    expiresIn: jwtExpiresIn + "d",
   },
 });
+
+// Routes
+app.register(publicRoutes);
+app.register(privateRoutes);
 
 app.setErrorHandler((error, _, reply) => {
   if (error instanceof ZodError) {
