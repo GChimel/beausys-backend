@@ -51,14 +51,16 @@ model Subscription {
 }
 
 model Company {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  name      String
-  address   String
-  cellPhone String   @map("cell_phone")
-  photo     String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  name          String
+  address       String
+  addressNumber Int      @map("address_number")
+  zipCode       String   @map("zip_code")
+  cellPhone     String   @map("cell_phone")
+  photo         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   Product  Product[]

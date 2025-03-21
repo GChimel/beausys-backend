@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { AuhtenticateController } from "./controllers/authenticateController";
+import { UserController } from "./controllers/userController";
 import { authMiddleware } from "./middlewares/authMiddleware";
 
 export async function publicRoutes(fastify: FastifyInstance) {
@@ -12,7 +13,7 @@ export async function publicRoutes(fastify: FastifyInstance) {
 export async function privateRoutes(fastify: FastifyInstance) {
   fastify.addHook("onRequest", authMiddleware);
 
-  fastify.get("/me", async (request, reply) => {
-    return reply.code(200).send({ ok: true });
-  });
+  // User routes
+  fastify.patch("/user/:id", UserController.update);
+  fastify.get("/user/:id", UserController.findById);
 }
