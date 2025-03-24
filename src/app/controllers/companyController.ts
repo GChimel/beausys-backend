@@ -139,4 +139,35 @@ export class CompanyController {
       throw error;
     }
   }
+
+  static async delete(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = z
+      .object({
+        id: z.string().uuid(),
+      })
+      .parse(request.params);
+
+    try {
+      // Verify if company exists
+      const company = await prismaClient.company.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!company) {
+        return reply.code(404).send({ message: "Company not found" });
+      }
+
+      await prismaClient.company.delete({
+        where: {
+          id,
+        },
+      });
+
+      return reply.status(204).send();
+    } catch (error) {
+      throw error;
+    }
+  }
 }
