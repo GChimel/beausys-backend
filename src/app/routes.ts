@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { AuhtenticateController } from "./controllers/authenticateController";
+import { CompanyController } from "./controllers/companyController";
 import { UserController } from "./controllers/userController";
 import { authMiddleware } from "./middlewares/authMiddleware";
 
@@ -14,6 +15,12 @@ export async function privateRoutes(fastify: FastifyInstance) {
   fastify.addHook("onRequest", authMiddleware);
 
   // User routes
-  fastify.patch("/user/:id", UserController.update);
+  fastify.put("/user/:id", UserController.update);
   fastify.get("/user/:id", UserController.findById);
+
+  // Company routes
+  fastify.post("/company", CompanyController.create);
+  fastify.get("/company/:id", CompanyController.findById);
+  fastify.get("/company", CompanyController.findAll);
+  fastify.put("/company/:id", CompanyController.update);
 }
