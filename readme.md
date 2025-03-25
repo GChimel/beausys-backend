@@ -101,7 +101,7 @@ Use to login in the system.
 
 ### User by id
 
-**`POST /user/:id`**
+**`GET /user/:id`**
 
 **Response (200 Ok):**
 
