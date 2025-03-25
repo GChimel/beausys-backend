@@ -44,4 +44,7 @@ export async function privateRoutes(fastify: FastifyInstance) {
 
   // Schedule routes
   fastify.post("/schedule", ScheduleController.create);
+  fastify.get("/schedule/:id", ScheduleController.findById);
+  fastify.get("/schedule", ScheduleController.findAll);
+  fastify.delete("/schedule/:id", ScheduleController.delete);
 }

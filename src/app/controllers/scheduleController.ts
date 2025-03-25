@@ -66,7 +66,6 @@ export class ScheduleController {
             customerPhone: body.costumerPhone,
             date: body.date,
             companyId: body.companyId,
-            userId: company.userId,
             createdAt: new Date(),
             updatedAt: new Date(),
           },
@@ -94,6 +93,74 @@ export class ScheduleController {
       });
 
       return reply.status(201).send(schedule);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async findAll(request: FastifyRequest, reply: FastifyReply) {
+    const { companyId } = z
+      .object({
+        companyId: z.string().uuid(),
+      })
+      .parse(request.query);
+
+    try {
+      const schedules = await prismaClient.schedule.findMany({
+        where: {
+          companyId,
+        },
+      });
+
+      return reply.status(200).send(schedules);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async findById(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = z
+      .object({
+        id: z.string().uuid(),
+      })
+      .parse(request.params);
+
+    try {
+      const schedule = await prismaClient.schedule.findUnique({
+        where: { id },
+      });
+
+      if (!schedule) {
+        return reply.code(404).send({ message: "Schedule not found" });
+      }
+
+      return reply.code(200).send(schedule);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async delete(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = z
+      .object({
+        id: z.string().uuid(),
+      })
+      .parse(request.params);
+
+    try {
+      const schedule = await prismaClient.schedule.findUnique({
+        where: { id },
+      });
+
+      if (!schedule) {
+        return reply.code(404).send({ message: "Schedule not found" });
+      }
+
+      await prismaClient.schedule.delete({
+        where: { id },
+      });
+
+      return reply.status(204).send();
     } catch (error) {
       throw error;
     }

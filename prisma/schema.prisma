@@ -20,7 +20,6 @@ model User {
   RefreshToken RefreshToken[]
   Subscription Subscription[]
   Company      Company[]
-  Schedule     Schedule[]
 
   @@map("users")
 }
@@ -106,19 +105,18 @@ model Service {
 model Schedule {
   id            String   @id @default(uuid()) @db.Uuid
   companyId     String   @map("company_id") @db.Uuid
-  userId        String   @map("user_id") @db.Uuid
   date          DateTime
   customerName  String   @map("customer_name")
   customerEmail String   @map("customer_email")
   customerPhone String   @map("customer_phone")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
+  done          Boolean  @default(false)
 
   ScheduleProduct ScheduleProduct[]
   ScheduleService ScheduleService[]
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("schedules")
 }
