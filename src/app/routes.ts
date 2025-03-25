@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { AuhtenticateController } from "./controllers/authenticateController";
 import { CompanyController } from "./controllers/companyController";
 import { ProductController } from "./controllers/productController";
+import { ServiceController } from "./controllers/serviceController";
 import { UserController } from "./controllers/userController";
 import { authMiddleware } from "./middlewares/authMiddleware";
 
@@ -28,8 +29,15 @@ export async function privateRoutes(fastify: FastifyInstance) {
 
   // Product routes
   fastify.post("/product", ProductController.create);
-  fastify.get("/product/id", ProductController.findById);
-  fastify.get("/product", ProductController.findById);
+  fastify.get("/product/:id", ProductController.findById);
+  fastify.get("/product", ProductController.findAll);
   fastify.delete("/product/:id", ProductController.delete);
-  fastify.put("/product/:id", ProductController.delete);
+  fastify.put("/product/:id", ProductController.update);
+
+  // Service routes
+  fastify.post("/service", ServiceController.create);
+  fastify.get("/service/:id", ServiceController.findById);
+  fastify.get("/service", ServiceController.findAll);
+  fastify.delete("/service/:id", ServiceController.delete);
+  fastify.put("/service/:id", ServiceController.update);
 }
