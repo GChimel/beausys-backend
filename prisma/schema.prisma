@@ -92,6 +92,7 @@ model Service {
   name         String
   description  String
   expectedTime String   @map("expected_time")
+  price        Float
   photo        String?
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
@@ -127,6 +128,7 @@ model ScheduleProduct {
   scheduleId String @map("schedule_id") @db.Uuid
   productId  String @map("product_id") @db.Uuid
   quantity   Int    @default(1)
+  discount   Float?
 
   schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)

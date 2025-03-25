@@ -6,6 +6,7 @@ const schema = z.object({
   companyId: z.string().uuid(),
   name: z.string(),
   description: z.string(),
+  price: z.number(),
   expectedTime: z.string(),
   photo: z.string().optional(),
 });
