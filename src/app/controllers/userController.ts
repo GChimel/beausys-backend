@@ -1,7 +1,7 @@
 import { compare, hash } from "bcryptjs";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { prismaClient } from "../lib/prismaClient";
+import { UserService } from "../services/userService";
 
 export class UserController {
   static async update(request: FastifyRequest, reply: FastifyReply) {
@@ -25,22 +25,13 @@ export class UserController {
     );
 
     try {
-      const emailExists = await prismaClient.user.findFirst({
-        where: {
-          email,
-          NOT: {
-            id,
-          },
-        },
-      });
+      const emailExists = await UserService.findByEmail(email);
 
       if (emailExists) {
         return reply.code(406).send({ message: "Email already exists" });
       }
 
-      const user = await prismaClient.user.findUnique({
-        where: { id },
-      });
+      const user = await UserService.findById(id);
 
       if (!user) {
         return reply.code(404).send({ message: "User not found" });
@@ -54,16 +45,11 @@ export class UserController {
 
       const hashPassword = await hash(new_password, 8);
 
-      const updatedUser = await prismaClient.user.update({
-        where: {
-          id,
-        },
-        data: {
-          name,
-          email,
-          cellPhone,
-          password: hashPassword,
-        },
+      const updatedUser = await UserService.update(id, {
+        name,
+        email,
+        cellPhone,
+        password: hashPassword,
       });
 
       return reply.code(200).send(updatedUser);
@@ -83,15 +69,7 @@ export class UserController {
 
     try {
       // Verify if user exists
-      const user = await prismaClient.user.findUnique({
-        where: { id },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          cellPhone: true,
-        },
-      });
+      const user = await UserService.findById(id);
 
       if (!user) {
         return reply.code(404).send({ message: "User not found" });

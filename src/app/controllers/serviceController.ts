@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { prismaClient } from "../lib/prismaClient";
+import { CompanyService } from "../services/companyService";
+import { ServiceService } from "../services/serviceService";
 
 const schema = z.object({
   companyId: z.string().uuid(),
@@ -16,20 +17,16 @@ export class ServiceController {
     const body = schema.parse(request.body);
     try {
       // Verify if company exists
-      const company = await prismaClient.company.findUnique({
-        where: { id: body.companyId },
-      });
+      const company = await CompanyService.findById(body.companyId);
 
       if (!company) {
         return reply.code(404).send({ message: "Company not found" });
       }
 
-      const service = await prismaClient.service.create({
-        data: {
-          ...body,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
+      const service = await ServiceService.create({
+        ...body,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
 
       return reply.status(201).send(service);
@@ -47,19 +44,13 @@ export class ServiceController {
 
     try {
       // Verify if company exists
-      const company = await prismaClient.company.findUnique({
-        where: { id: companyId },
-      });
+      const company = await CompanyService.findById(companyId);
 
       if (!company) {
         return reply.code(404).send({ message: "Company not found" });
       }
 
-      const services = await prismaClient.service.findMany({
-        where: {
-          companyId,
-        },
-      });
+      const services = await ServiceService.findAll(companyId);
 
       return reply.status(200).send(services);
     } catch (error) {
@@ -75,9 +66,7 @@ export class ServiceController {
       .parse(request.params);
 
     try {
-      const service = await prismaClient.service.findUnique({
-        where: { id },
-      });
+      const service = await ServiceService.findById(id);
 
       if (!service) {
         return reply.code(404).send({ message: "Service not found" });
@@ -100,30 +89,21 @@ export class ServiceController {
 
     try {
       // Verify if company exists
-      const company = await prismaClient.company.findUnique({
-        where: { id: body.companyId },
-      });
+      const company = await CompanyService.findById(body.companyId);
 
       if (!company) {
         return reply.code(404).send({ message: "Company not found" });
       }
 
-      const service = await prismaClient.service.findUnique({
-        where: { id },
-      });
+      const service = await ServiceService.findById(id);
 
       if (!service) {
         return reply.code(404).send({ message: "Service not found" });
       }
 
-      const updatedService = await prismaClient.service.update({
-        where: {
-          id,
-        },
-        data: {
-          ...body,
-          updatedAt: new Date(),
-        },
+      const updatedService = await ServiceService.update(id, {
+        ...body,
+        updatedAt: new Date(),
       });
 
       return reply.code(200).send(updatedService);
@@ -140,19 +120,13 @@ export class ServiceController {
       .parse(request.params);
 
     try {
-      const service = await prismaClient.service.findUnique({
-        where: { id },
-      });
+      const service = await ServiceService.findById(id);
 
       if (!service) {
         return reply.code(404).send({ message: "Service not found" });
       }
 
-      await prismaClient.service.delete({
-        where: {
-          id,
-        },
-      });
+      await ServiceService.delete(id);
 
       return reply.status(204).send();
     } catch (error) {

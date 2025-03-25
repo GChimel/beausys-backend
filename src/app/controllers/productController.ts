@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { prismaClient } from "../lib/prismaClient";
+import { CompanyService } from "../services/companyService";
+import { ProductService } from "../services/productService";
 
 const schema = z.object({
   companyId: z.string().uuid(),
@@ -15,20 +16,16 @@ export class ProductController {
     const body = schema.parse(request.body);
     try {
       // Verify if company exists
-      const company = await prismaClient.company.findUnique({
-        where: { id: body.companyId },
-      });
+      const company = await CompanyService.findById(body.companyId);
 
       if (!company) {
         return reply.code(404).send({ message: "Company not found" });
       }
 
-      const product = await prismaClient.product.create({
-        data: {
-          ...body,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
+      const product = await ProductService.create({
+        ...body,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
 
       return reply.status(201).send(product);
@@ -45,11 +42,7 @@ export class ProductController {
       .parse(request.params);
 
     try {
-      const product = await prismaClient.product.findUnique({
-        where: {
-          id,
-        },
-      });
+      const product = await ProductService.findById(id);
 
       if (!product) {
         return reply.code(404).send({ message: "Product not found" });
@@ -70,19 +63,13 @@ export class ProductController {
 
     try {
       // Verify if company exists
-      const company = await prismaClient.company.findUnique({
-        where: { id: companyId },
-      });
+      const company = await CompanyService.findById(companyId);
 
       if (!company) {
         return reply.code(404).send({ message: "Company not found" });
       }
 
-      const products = await prismaClient.product.findMany({
-        where: {
-          companyId,
-        },
-      });
+      const products = await ProductService.findAll(companyId);
 
       return reply.status(200).send(products);
     } catch (error) {
@@ -99,19 +86,13 @@ export class ProductController {
 
     try {
       // Verify if product exists
-      const product = await prismaClient.product.findUnique({
-        where: { id },
-      });
+      const product = await ProductService.findById(id);
 
       if (!product) {
         return reply.code(404).send({ message: "Product not found" });
       }
 
-      await prismaClient.product.delete({
-        where: {
-          id,
-        },
-      });
+      await ProductService.delete(id);
 
       return reply.status(204).send();
     } catch (error) {
@@ -130,23 +111,13 @@ export class ProductController {
 
     try {
       // Verify if product exists
-      const product = await prismaClient.product.findUnique({
-        where: { id },
-      });
+      const product = await ProductService.findById(id);
 
       if (!product) {
         return reply.code(404).send({ message: "Product not found" });
       }
 
-      const updatedProduct = await prismaClient.product.update({
-        where: {
-          id,
-        },
-        data: {
-          ...body,
-          updatedAt: new Date(),
-        },
-      });
+      const updatedProduct = await ProductService.update(id, body);
 
       return reply.status(200).send(updatedProduct);
     } catch (error) {

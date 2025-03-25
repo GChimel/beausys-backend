@@ -5,6 +5,8 @@ import { ENV_VARS } from "../config/env";
 import { AuthenticationError } from "../errors/authenticateError";
 import { prismaClient } from "../lib/prismaClient";
 import { GoogleApis } from "../services/googleApis";
+import { RefreshTokenService } from "../services/refreshTokenService";
+import { UserService } from "../services/userService";
 
 export class AuhtenticateController {
   static signIn = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -16,11 +18,7 @@ export class AuhtenticateController {
     const { email, password } = schema.parse(request.body);
 
     try {
-      const user = await prismaClient.user.findUnique({
-        where: {
-          email,
-        },
-      });
+      const user = await UserService.findByEmail(email);
 
       if (!user) {
         throw new AuthenticationError();
@@ -39,12 +37,10 @@ export class AuhtenticateController {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + Number(ENV_VARS.JWT_EXPIRES_IN));
 
-      const { id: refreshToken } = await prismaClient.refreshToken.create({
-        data: {
-          userId: user.id,
-          expiresAt,
-          issuedAt: new Date(),
-        },
+      const { id: refreshToken } = await RefreshTokenService.create({
+        userId: user.id,
+        expiresAt,
+        issuedAt: new Date(),
       });
 
       return reply.code(200).send({
@@ -72,11 +68,7 @@ export class AuhtenticateController {
     const { email, password, name } = schema.parse(request.body);
 
     try {
-      const userExists = await prismaClient.user.findUnique({
-        where: {
-          email,
-        },
-      });
+      const userExists = await UserService.findByEmail(email);
 
       if (userExists) {
         return reply.code(400).send({
@@ -87,12 +79,10 @@ export class AuhtenticateController {
 
       const hashedPassword = await hash(password, 8);
 
-      const user = await prismaClient.user.create({
-        data: {
-          name,
-          email,
-          password: hashedPassword,
-        },
+      const user = await UserService.create({
+        name,
+        email,
+        password: hashedPassword,
       });
 
       const accessToken = await reply.jwtSign({
@@ -102,12 +92,10 @@ export class AuhtenticateController {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + Number(ENV_VARS.JWT_EXPIRES_IN));
 
-      const { id: refreshToken } = await prismaClient.refreshToken.create({
-        data: {
-          userId: user.id,
-          expiresAt,
-          issuedAt: new Date(),
-        },
+      const { id: refreshToken } = await RefreshTokenService.create({
+        userId: user.id,
+        expiresAt,
+        issuedAt: new Date(),
       });
 
       return reply.code(201).send({
@@ -179,11 +167,7 @@ export class AuhtenticateController {
     const { refreshToken: refreshTokenId } = schema.parse(request.body);
 
     try {
-      const refreshToken = await prismaClient.refreshToken.findUnique({
-        where: {
-          id: refreshTokenId,
-        },
-      });
+      const refreshToken = await RefreshTokenService.findById(refreshTokenId);
 
       if (!refreshToken) {
         return reply.code(400).send({
@@ -204,18 +188,12 @@ export class AuhtenticateController {
 
       const [accessToken, newRefreshToken] = await Promise.all([
         reply.jwtSign({ sub: refreshToken.userId }),
-        prismaClient.refreshToken.create({
-          data: {
-            userId: refreshToken.userId,
-            expiresAt,
-            issuedAt: new Date(),
-          },
+        RefreshTokenService.create({
+          userId: refreshToken.userId,
+          expiresAt,
+          issuedAt: new Date(),
         }),
-        prismaClient.refreshToken.delete({
-          where: {
-            id: refreshToken.id,
-          },
-        }),
+        RefreshTokenService.delete(refreshTokenId),
       ]);
 
       return reply.status(200).send({

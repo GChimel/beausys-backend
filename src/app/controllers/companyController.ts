@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { prismaClient } from "../lib/prismaClient";
+import { CompanyService } from "../services/companyService";
+import { UserService } from "../services/userService";
 
 const schema = z.object({
   userId: z.string().uuid(),
@@ -18,34 +19,31 @@ export class CompanyController {
 
     try {
       //Verify if user exists
-      const user = await prismaClient.user.findUnique({
-        where: { id: body.userId },
-      });
+      const user = await UserService.findById(body.userId);
 
       if (!user) {
         throw new Error("User not found");
       }
 
       // Verify if company already exists for same user
-      const companyExists = await prismaClient.company.findFirst({
-        where: { userId: body.userId, AND: { name: body.name } },
-      });
+      const companyExists = await CompanyService.findByUserId(
+        body.userId,
+        body.name
+      );
 
       if (companyExists) {
         return reply.code(400).send({ message: "Company already exists" });
       }
 
-      const company = await prismaClient.company.create({
-        data: {
-          userId: body.userId,
-          address: body.address,
-          addressNumber: body.address_number,
-          zipCode: body.zipCode,
-          cellPhone: body.cellPhone,
-          name: body.name,
-          photo: body.photo,
-          createdAt: new Date(),
-        },
+      const company = await CompanyService.create({
+        userId: body.userId,
+        address: body.address,
+        addressNumber: body.address_number,
+        zipCode: body.zipCode,
+        cellPhone: body.cellPhone,
+        name: body.name,
+        photo: body.photo,
+        createdAt: new Date(),
       });
 
       return reply.code(201).send(company);
@@ -62,11 +60,7 @@ export class CompanyController {
       .parse(request.params);
 
     try {
-      const company = await prismaClient.company.findUnique({
-        where: {
-          id,
-        },
-      });
+      const company = await CompanyService.findById(id);
 
       if (!company) {
         return reply.code(404).send({ message: "Company not found" });
@@ -84,11 +78,7 @@ export class CompanyController {
       .parse(request.query);
 
     try {
-      const companies = await prismaClient.company.findMany({
-        where: {
-          userId,
-        },
-      });
+      const companies = await CompanyService.findAll(userId);
 
       return reply.status(200).send(companies);
     } catch (error) {
@@ -107,32 +97,21 @@ export class CompanyController {
 
     try {
       //Verify if user exists
-      const user = await prismaClient.user.findUnique({
-        where: { id: body.userId },
-      });
+      const user = await UserService.findById(body.userId);
 
       if (!user) {
         throw new Error("User not found");
       }
 
       // Verify if company exists
-      const companyExists = await prismaClient.company.findUnique({
-        where: { id },
-      });
+      const companyExists = await CompanyService.findById(id);
 
       if (!companyExists) {
         return reply.code(404).send({ message: "Company not found" });
       }
 
       // update company
-      const company = await prismaClient.company.update({
-        where: {
-          id,
-        },
-        data: {
-          ...body,
-        },
-      });
+      const company = await CompanyService.update(id, body);
 
       return reply.status(200).send(company);
     } catch (error) {
@@ -149,21 +128,13 @@ export class CompanyController {
 
     try {
       // Verify if company exists
-      const company = await prismaClient.company.findUnique({
-        where: {
-          id,
-        },
-      });
+      const company = await CompanyService.findById(id);
 
       if (!company) {
         return reply.code(404).send({ message: "Company not found" });
       }
 
-      await prismaClient.company.delete({
-        where: {
-          id,
-        },
-      });
+      await CompanyService.delete(id);
 
       return reply.status(204).send();
     } catch (error) {
