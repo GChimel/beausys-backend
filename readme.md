@@ -1,12 +1,35 @@
-# BEAUSYS - BACKEND
+# BEAUSYS - API
 
-This repo is the `beausys` documentation that contains:
+Beausys is a SaaS platform designed to facilitate service scheduling and sales management. Users can register, create a company, and manage products and services. Their customers can then schedule appointments for services.
 
-- Features
+- [Features](#features)
 - [Endpoints](#endpoints)
-- Importants
 
 ## Features
+
+### User Management
+
+- User registration, authentication, and token refresh
+- Profile management (update user information)
+
+### Company Management
+
+- Create, update, delete, and list companies
+- Assign users to companies
+
+### Product Management
+
+- Create, update, delete, and list products for a company
+
+### Service Management
+
+- Create, update, delete, and list services
+- Define duration and pricing for services
+
+### Scheduling System
+
+- Customers can book services
+- View and manage scheduled appointments
 
 ## Endpoints
 
@@ -17,7 +40,7 @@ This repo is the `beausys` documentation that contains:
   - [Refresh-token](#refresh-token)
 
 - [With authentication](#with-authentication)
-  - All of these requests require a **Beare Token** in the `Authorization` header.
+  - All of these requests require a **Bearer Token** in the `Authorization` header.
 
 ---
 
@@ -72,6 +95,15 @@ Use to login in the system.
 }
 ```
 
+**Response (401 - Unauthorized):**
+
+```json
+{
+  "error": true,
+  "message": "Invalid credentials"
+}
+```
+
 ### Refresh token
 
 **`POST /auth/refresh-token`**
@@ -101,7 +133,7 @@ Use to login in the system.
 
 ### User by id
 
-**`POST /user/:id`**
+**`GET /user/:id`**
 
 **Response (200 Ok):**
 
