@@ -7,7 +7,7 @@ const schema = z.object({
   userId: z.string().uuid(),
   name: z.string(),
   address: z.string(),
-  address_number: z.number(),
+  addressNumber: z.number(),
   zipCode: z.string(),
   cellPhone: z.string(),
   photo: z.string().optional(),
@@ -38,7 +38,7 @@ export class CompanyController {
       const company = await CompanyService.create({
         userId: body.userId,
         address: body.address,
-        addressNumber: body.address_number,
+        addressNumber: body.addressNumber,
         zipCode: body.zipCode,
         cellPhone: body.cellPhone,
         name: body.name,
@@ -65,6 +65,8 @@ export class CompanyController {
       if (!company) {
         return reply.code(404).send({ message: "Company not found" });
       }
+
+      return reply.status(200).send(company);
     } catch (error) {
       throw error;
     }

@@ -40,11 +40,23 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
   - [Refresh-token](#refresh-token)
 
 - [With authentication](#with-authentication)
+
   - All of these requests require a **Bearer Token** in the `Authorization` header.
+
+  - [User](#user)
+    - [GET by id](#user-by-id)
+    - [PUT user](#update-user)
+  - [Company](#company)
+    - [POST create](#create-company)
+    - [GET all](#company-all-by-user)
+    - [GET by id](#company-by-id)
+    - [DELETE by id](#company-delete)
 
 ---
 
-### Without authentication
+## Without authentication
+
+## Auth and register
 
 ### Sign-up
 
@@ -131,6 +143,8 @@ Use to login in the system.
 
 ### With authentication
 
+## User
+
 ### User by id
 
 **`GET /user/:id`**
@@ -149,3 +163,136 @@ Use to login in the system.
   "googleId": null
 }
 ```
+
+### Update user
+
+**`PUT /user/:id`**
+
+**Request body:**
+
+- name -> string
+- taxId -> string (CPF/CNPJ)
+- email -> string
+- password -> string
+- new_password -> string
+- cellPhone -> string
+
+```json
+{
+  "name": "Mr jhon",
+  "email": "mrjhon@gmail.com",
+  "password": "123456",
+  "new_password": "123123",
+  "cellPhone": "42999999999",
+  "taxId": "12345678909"
+}
+```
+
+**Response (200 Ok):**
+
+```json
+{
+  "id": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
+  "name": "Mr jhon",
+  "email": "mrjhon@gmail.com",
+  "password": "$2b$08$YS3f6MjikgK2a5VK4/.X..MMmO/6Wu1ToNAK51hNYxDNN9AOp946a",
+  "cellPhone": "42999999999",
+  "taxId": 12345678909,
+  "createdAt": "2025-03-28T09:36:21.560Z",
+  "googleId": null
+}
+```
+
+## Company
+
+### Create company
+
+**`POST /company`**
+
+**Request body:**
+
+- userId -> string UUID
+- name -> string
+- address -> string
+- address_number -> number
+- zipCode -> string
+- cellPhone -> string
+- photo -> string | null
+
+```json
+{
+  "userId": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
+  "name": "test",
+  "address": "example street",
+  "address_number": 90,
+  "zipCode": "84500000",
+  "cellPhone": "42999999999"
+}
+```
+
+**Response (201 CREATED):**
+
+```json
+{
+  "id": "a92d4a2c-1350-4763-a15e-ac309681fc8d",
+  "userId": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
+  "name": "test",
+  "address": "example street",
+  "addressNumber": 90,
+  "zipCode": "84500000",
+  "cellPhone": "42999999999",
+  "photo": null,
+  "createdAt": "2025-03-28T09:50:57.757Z",
+  "updatedAt": "2025-03-28T09:50:57.758Z"
+}
+```
+
+### Company all (by user)
+
+**`GET /company?userId=`**
+
+- id by query param
+
+**Response (200 Ok):**
+
+```json
+{
+  "id": "a92d4a2c-1350-4763-a15e-ac309681fc8d",
+  "userId": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
+  "name": "test",
+  "address": "example street",
+  "addressNumber": 90,
+  "zipCode": "84500000",
+  "cellPhone": "42999999999",
+  "photo": null,
+  "createdAt": "2025-03-28T09:50:57.757Z",
+  "updatedAt": "2025-03-28T09:50:57.758Z"
+}
+```
+
+### Company by id
+
+**`GET /company/:id`**
+
+**Response (200 Ok):**
+
+```json
+{
+  "id": "a92d4a2c-1350-4763-a15e-ac309681fc8d",
+  "userId": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
+  "name": "test",
+  "address": "example street",
+  "addressNumber": 90,
+  "zipCode": "84500000",
+  "cellPhone": "42999999999",
+  "photo": null,
+  "createdAt": "2025-03-28T09:50:57.757Z",
+  "updatedAt": "2025-03-28T09:50:57.758Z"
+}
+```
+
+### Company delete
+
+**`DELETE /company/:id`**
+
+**Response (204 - NO CONTENT):**
