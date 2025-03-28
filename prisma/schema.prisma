@@ -61,10 +61,11 @@ model Company {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Product  Product[]
-  Service  Service[]
-  Schedule Schedule[]
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Product           Product[]
+  Service           Service[]
+  Schedule          Schedule[]
+  AvailableSchedule AvailableSchedule[]
 
   @@map("companies")
 }
@@ -105,7 +106,7 @@ model Service {
 model Schedule {
   id            String   @id @default(uuid()) @db.Uuid
   companyId     String   @map("company_id") @db.Uuid
-  date          DateTime
+  availableId   String   @unique @map("available_id") @db.Uuid
   customerName  String   @map("customer_name")
   customerEmail String   @map("customer_email")
   customerPhone String   @map("customer_phone")
@@ -116,9 +117,26 @@ model Schedule {
   ScheduleProduct ScheduleProduct[]
   ScheduleService ScheduleService[]
 
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company           Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  availableSchedule AvailableSchedule @relation(fields: [availableId], references: [id], onDelete: Cascade)
 
   @@map("schedules")
+}
+
+model AvailableSchedule {
+  id        String   @id @unique @default(uuid()) @db.Uuid
+  companyId String   @map("company_id") @db.Uuid
+  date      DateTime
+  startTime DateTime @map("start_time")
+  endTime   DateTime @map("end_time")
+  isBooked  Boolean  @default(false) @map("is_booked")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  Schedule Schedule?
+
+  @@map("available_schedules")
 }
 
 model ScheduleProduct {
