@@ -1,0 +1,35 @@
+name: Beausys Ci
+
+# Moment to run the workflow
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Use node.js 22x
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: "yarn"
+
+      - run: npm pkg delete scripts.prepare
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Linting
+        run: yarn lint
+
+      - name: Typechecking
+        run: yarn typecheck
+
+      - name: Test
+        run: yarn test
