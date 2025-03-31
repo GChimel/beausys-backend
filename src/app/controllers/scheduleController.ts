@@ -10,7 +10,7 @@ export class ScheduleController {
   static async create(request: FastifyRequest, reply: FastifyReply) {
     const schema = z.object({
       companyId: z.string().uuid(),
-      date: z.string().transform((date) => new Date(date)),
+      availableSchedule: z.string().uuid(),
       products: z.array(
         z.object({
           productId: z.string().uuid(),
@@ -61,10 +61,10 @@ export class ScheduleController {
           customerEmail: body.costumerEmail,
           customerName: body.costumerName,
           customerPhone: body.costumerPhone,
-          date: body.date,
           companyId: body.companyId,
           createdAt: new Date(),
           updatedAt: new Date(),
+          availableId: body.availableSchedule,
         });
 
         for (const product of body.products) {
