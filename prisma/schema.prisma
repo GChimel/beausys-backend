@@ -8,14 +8,14 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
+  id        String   @id @unique @default(uuid()) @db.Uuid
   name      String
   email     String   @unique
   password  String
   cellPhone String?  @map("cell_phone")
   taxId     String?  @map("tax_id")
   createdAt DateTime @default(now()) @map("created_at")
-  googleId  String?  @map("google_id")
+  googleId  String?  @unique @map("google_id")
 
   RefreshToken RefreshToken[]
   Subscription Subscription[]
@@ -25,7 +25,7 @@ model User {
 }
 
 model RefreshToken {
-  id        String   @id @default(uuid()) @db.Uuid
+  id        String   @id @unique @default(uuid()) @db.Uuid
   userId    String   @map("user_id") @db.Uuid
   expiresAt DateTime @map("expires_at")
   issuedAt  DateTime @map("issued_at")
@@ -36,7 +36,7 @@ model RefreshToken {
 }
 
 model Subscription {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String   @id @unique @default(uuid()) @db.Uuid
   userId      String   @map("user_id") @db.Uuid
   status      String
   amount      Float
@@ -50,7 +50,7 @@ model Subscription {
 }
 
 model Company {
-  id            String   @id @default(uuid()) @db.Uuid
+  id            String   @id @unique @default(uuid()) @db.Uuid
   userId        String   @map("user_id") @db.Uuid
   name          String
   address       String
@@ -66,12 +66,13 @@ model Company {
   Service           Service[]
   Schedule          Schedule[]
   AvailableSchedule AvailableSchedule[]
+  Client            Client[]
 
   @@map("companies")
 }
 
 model Product {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String   @id @unique @default(uuid()) @db.Uuid
   companyId   String   @map("company_id") @db.Uuid
   name        String
   price       Float
@@ -86,8 +87,25 @@ model Product {
   @@map("products")
 }
 
+model Client {
+  id           String   @id @unique @default(uuid()) @db.Uuid
+  companyId    String   @map("company_id") @db.Uuid
+  name         String
+  email        String   @unique
+  password     String
+  cellPhone    String   @map("cell_phone")
+  googleId     String?  @unique @map("google_id")
+  photo        String?
+  registeredAt DateTime @map("registered_at")
+
+  company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  Schedule Schedule?
+
+  @@map("client")
+}
+
 model Service {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @unique @default(uuid()) @db.Uuid
   companyId    String   @map("company_id") @db.Uuid
   name         String
   description  String
@@ -104,21 +122,20 @@ model Service {
 }
 
 model Schedule {
-  id            String   @id @default(uuid()) @db.Uuid
-  companyId     String   @map("company_id") @db.Uuid
-  availableId   String   @unique @map("available_id") @db.Uuid
-  customerName  String   @map("customer_name")
-  customerEmail String   @map("customer_email")
-  customerPhone String   @map("customer_phone")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  done          Boolean  @default(false)
+  id          String   @id @unique @default(uuid()) @db.Uuid
+  companyId   String   @map("company_id") @db.Uuid
+  availableId String   @unique @map("available_id") @db.Uuid
+  clientId    String   @unique @map("client_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  done        Boolean  @default(false)
 
   ScheduleProduct ScheduleProduct[]
   ScheduleService ScheduleService[]
 
   company           Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
   availableSchedule AvailableSchedule @relation(fields: [availableId], references: [id], onDelete: Cascade)
+  client            Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@map("schedules")
 }
@@ -140,7 +157,7 @@ model AvailableSchedule {
 }
 
 model ScheduleProduct {
-  id         String @id @default(uuid()) @db.Uuid
+  id         String @id @unique @default(uuid()) @db.Uuid
   scheduleId String @map("schedule_id") @db.Uuid
   productId  String @map("product_id") @db.Uuid
   quantity   Int    @default(1)
@@ -153,7 +170,7 @@ model ScheduleProduct {
 }
 
 model ScheduleService {
-  id         String @id @default(uuid()) @db.Uuid
+  id         String @id @unique @default(uuid()) @db.Uuid
   scheduleId String @map("schedule_id") @db.Uuid
   serviceId  String @map("service_id") @db.Uuid
 

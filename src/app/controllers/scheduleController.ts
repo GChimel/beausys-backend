@@ -10,6 +10,7 @@ export class ScheduleController {
   static async create(request: FastifyRequest, reply: FastifyReply) {
     const schema = z.object({
       companyId: z.string().uuid(),
+      clientId: z.string().uuid(),
       availableSchedule: z.string().uuid(),
       products: z.array(
         z.object({
@@ -58,9 +59,7 @@ export class ScheduleController {
 
       const schedule = await prismaClient.$transaction(async (prisma) => {
         const schedule = await ScheduleService.create({
-          customerEmail: body.costumerEmail,
-          customerName: body.costumerName,
-          customerPhone: body.costumerPhone,
+          clientId: body.clientId,
           companyId: body.companyId,
           createdAt: new Date(),
           updatedAt: new Date(),
