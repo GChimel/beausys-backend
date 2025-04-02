@@ -6,11 +6,13 @@ export class ClientService {
     return prismaClient.client.create({ data: data });
   }
 
-  static async findAll() {
-    return prismaClient.client.findMany();
+  static async findAll(companyId: string) {
+    return prismaClient.client.findMany({ where: { companyId } });
   }
 
-  static async findByEmail(email: string) {
-    return prismaClient.client.findUnique({ where: { email } });
+  static async findByEmail(companyId: string, email: string) {
+    return prismaClient.client.findUnique({
+      where: { email, AND: { companyId } },
+    });
   }
 }

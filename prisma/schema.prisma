@@ -26,11 +26,13 @@ model User {
 
 model RefreshToken {
   id        String   @id @unique @default(uuid()) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid
+  clientId  String?  @map("client_id") @db.Uuid
   expiresAt DateTime @map("expires_at")
   issuedAt  DateTime @map("issued_at")
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@map("refresh_tokens")
 }
@@ -98,8 +100,9 @@ model Client {
   photo        String?
   registeredAt DateTime @map("registered_at")
 
-  company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  Schedule Schedule?
+  company      Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  Schedule     Schedule?
+  RefreshToken RefreshToken[]
 
   @@map("client")
 }

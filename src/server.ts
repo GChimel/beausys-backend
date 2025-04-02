@@ -1,5 +1,6 @@
 import FastifyCORS from "@fastify/cors";
 import FastifyJWT from "@fastify/jwt";
+import { PrismaClientInitializationError } from "@prisma/client/runtime/library";
 import Fastify from "fastify";
 import { ZodError } from "zod";
 import { ENV_VARS } from "./app/config/env";
@@ -29,9 +30,16 @@ app.register(privateRoutes);
 
 app.setErrorHandler((error, _, reply) => {
   if (error instanceof ZodError) {
-    return reply.status(400).send({
+    return reply.code(400).send({
       message: "Validation error.",
       issues: error.format(),
+    });
+  }
+
+  if (error instanceof PrismaClientInitializationError) {
+    return reply.code(400).send({
+      error: true,
+      message: "Database connection error.",
     });
   }
 

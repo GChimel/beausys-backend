@@ -1,11 +1,13 @@
 import { hash } from "bcryptjs";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
+import { ENV_VARS } from "../config/env";
 import { ClientService } from "../services/clientService";
 import { CompanyService } from "../services/companyService";
+import { RefreshTokenService } from "../services/refreshTokenService";
 
 export class ClientController {
-  static async create(request: FastifyRequest, reply: FastifyReply) {
+  static async register(request: FastifyRequest, reply: FastifyReply) {
     const schema = z.object({
       companyId: z.string().uuid(),
       name: z.string(),
@@ -27,7 +29,10 @@ export class ClientController {
       }
 
       // Verify if client email already exists
-      const emailExists = await ClientService.findByEmail(body.email);
+      const emailExists = await ClientService.findByEmail(
+        body.companyId,
+        body.email
+      );
 
       if (emailExists) {
         return reply.code(400).send({ message: "Email already exists" });
@@ -41,7 +46,39 @@ export class ClientController {
         registeredAt: new Date(),
       });
 
-      return reply.code(201).send(client);
+      const accessToken = await reply.jwtSign({
+        sub: client.id,
+      });
+
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + Number(ENV_VARS.JWT_EXPIRES_IN));
+
+      const { id: refreshToken } = await RefreshTokenService.create({
+        clientId: client.id,
+        expiresAt,
+        issuedAt: new Date(),
+      });
+
+      return reply.code(201).send({
+        accessToken,
+        refreshToken,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async findAll(request: FastifyRequest, reply: FastifyReply) {
+    const { companyId } = z
+      .object({
+        companyId: z.string().uuid(),
+      })
+      .parse(request.query);
+
+    try {
+      const clients = await ClientService.findAll(companyId);
+
+      return reply.status(200).send(clients);
     } catch (error) {
       throw error;
     }

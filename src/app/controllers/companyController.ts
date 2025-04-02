@@ -22,7 +22,7 @@ export class CompanyController {
       const user = await UserService.findById(body.userId);
 
       if (!user) {
-        throw new Error("User not found");
+        return reply.code(404).send({ message: "User not found" });
       }
 
       // Verify if company already exists for same user
