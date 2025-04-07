@@ -45,12 +45,25 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
 
   - [User](#user)
     - [GET by id](#user-by-id)
-    - [PUT user](#update-user)
+    - [PUT](#update-user)
   - [Company](#company)
     - [POST create](#create-company)
     - [GET all](#company-all-by-user)
     - [GET by id](#company-by-id)
+    - [PUT](#update-company)
     - [DELETE by id](#company-delete)
+  - [Product](#product)
+    - [POST create](#create-product)
+    - [GET all](#product-all-by-company)
+    - [GET by id](#product-by-id)
+    - [PUT](#update-product)
+    - [DELETE by id](#product-delete)
+  - [Service](#service)
+    - [POST create](#create-service)
+    - [GET all](#service-all-by-company)
+    - [GET by id](#service-by-id)
+    - [PUT](#update-service)
+    - [DELETE by id](#service-delete)
 
 ---
 
@@ -296,8 +309,304 @@ Use to login in the system.
 }
 ```
 
+### Update company
+
+**`PUT /company/:id`**
+
+**Request body:**
+
+- userId -> string UUID
+- name -> string
+- color -> hex
+- address -> string
+- address_number -> number
+- zipCode -> string
+- cellPhone -> string
+- photo -> string | null
+
+```json
+{
+  "userId": "f7e7373d-ab5f-4b95-b79d-6a172ad39a65",
+  "name": "new name",
+  "color": "#445760",
+  "address": "new address",
+  "addressNumber": 99,
+  "zipCode": "84500000",
+  "cellPhone": "42999999999"
+}
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "id": "70c598be-7187-40ca-8edc-20d8092a335e",
+  "userId": "f7e7373d-ab5f-4b95-b79d-6a172ad39a65",
+  "name": "new name",
+  "color": "#445760",
+  "address": "new address",
+  "addressNumber": 99,
+  "zipCode": "84500000",
+  "cellPhone": "42999999999",
+  "photo": null,
+  "createdAt": "2025-04-07T16:50:51.315Z",
+  "updatedAt": "2025-04-07T17:04:51.912Z"
+}
+```
+
 ### Company delete
 
 **`DELETE /company/:id`**
+
+**Response (204 - NO CONTENT):**
+
+## Product
+
+### Create Product
+
+**`POST /product`**
+
+**Request body:**
+
+- companyId -> string UUID
+- name -> string
+- price -> number
+- description -> string
+- photo -> string | null
+
+```json
+{
+  "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
+  "name": "example",
+  "price": 200.56,
+  "description": "product example"
+}
+```
+
+**Response (201 CREATED):**
+
+```json
+{
+  "id": "b793bf17-e397-4dae-b51e-603e74f7dd86",
+  "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
+  "name": "example",
+  "price": 200.56,
+  "description": "product example",
+  "photo": null,
+  "createdAt": "2025-04-07T16:51:05.595Z",
+  "updatedAt": "2025-04-07T16:51:05.595Z"
+}
+```
+
+### Product all (by company)
+
+**`GET /product?companyId=`**
+
+- company id by query param
+
+**Response (200 Ok):**
+
+```json
+[
+  {
+    "id": "b793bf17-e397-4dae-b51e-603e74f7dd86",
+    "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
+    "name": "example",
+    "price": 200.56,
+    "description": "product example",
+    "photo": null,
+    "createdAt": "2025-04-07T16:51:05.595Z",
+    "updatedAt": "2025-04-07T16:51:05.595Z"
+  }
+]
+```
+
+### Product by id
+
+**`GET /product/:id`**
+
+**Response (200 Ok):**
+
+```json
+{
+  "id": "b793bf17-e397-4dae-b51e-603e74f7dd86",
+  "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
+  "name": "example",
+  "price": 200.56,
+  "description": "product example",
+  "photo": null,
+  "createdAt": "2025-04-07T16:51:05.595Z",
+  "updatedAt": "2025-04-07T16:51:05.595Z"
+}
+```
+
+### Update product
+
+**`PUT /product/:id`**
+
+**Request body:**
+
+- companyId -> string UUID
+- name -> string
+- price -> number
+- description -> string
+- photo -> string | null
+
+```json
+{
+  "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
+  "name": "example2",
+  "price": 200.56,
+  "description": "new example"
+}
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "id": "b793bf17-e397-4dae-b51e-603e74f7dd86",
+  "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
+  "name": "example2",
+  "price": 200.56,
+  "description": "new example",
+  "photo": null,
+  "createdAt": "2025-04-07T16:51:05.595Z",
+  "updatedAt": "2025-04-07T16:55:22.139Z"
+}
+```
+
+### Product delete
+
+**`DELETE /product/:id`**
+
+**Response (204 - NO CONTENT):**
+
+## Service
+
+### Create Service
+
+**`POST /service`**
+
+**Request body:**
+
+- companyId -> string UUID
+- name -> string
+- price -> number
+- description -> string
+- expectedTime -> string
+- photo -> string | null
+
+```json
+{
+  "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
+  "name": "example",
+  "price": 100.0,
+  "description": "example",
+  "expectedTime": "30 minutes"
+}
+```
+
+**Response (201 CREATED):**
+
+```json
+{
+  "id": "21adb2be-9787-425b-890b-7fb5308424d0",
+  "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
+  "name": "example",
+  "description": "example",
+  "expectedTime": "30 minutes",
+  "price": 100,
+  "photo": null,
+  "createdAt": "2025-04-07T17:12:01.234Z",
+  "updatedAt": "2025-04-07T17:12:01.234Z"
+}
+```
+
+### Service all (by company)
+
+**`GET /service?companyId=`**
+
+- company id by query param
+
+**Response (200 Ok):**
+
+```json
+[
+  {
+    "id": "21adb2be-9787-425b-890b-7fb5308424d0",
+    "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
+    "name": "example",
+    "description": "example",
+    "expectedTime": "30 minutes",
+    "price": 100,
+    "photo": null,
+    "createdAt": "2025-04-07T17:12:01.234Z",
+    "updatedAt": "2025-04-07T17:12:01.234Z"
+  }
+]
+```
+
+### Service by id
+
+**`GET /service/:id`**
+
+**Response (200 Ok):**
+
+```json
+{
+  "id": "21adb2be-9787-425b-890b-7fb5308424d0",
+  "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
+  "name": "example",
+  "description": "example",
+  "expectedTime": "30 minutes",
+  "price": 100,
+  "photo": null,
+  "createdAt": "2025-04-07T17:12:01.234Z",
+  "updatedAt": "2025-04-07T17:12:01.234Z"
+}
+```
+
+### Update service
+
+**`PUT /service/:id`**
+
+**Request body:**
+
+- companyId -> string UUID
+- name -> string
+- price -> number
+- description -> string
+- photo -> string | null
+
+```json
+{
+  "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
+  "name": "new example",
+  "price": 10.0,
+  "description": "new example",
+  "expectedTime": "5 minutes"
+}
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "id": "21adb2be-9787-425b-890b-7fb5308424d0",
+  "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
+  "name": "new example",
+  "description": "new example",
+  "expectedTime": "5 minutes",
+  "price": 10,
+  "photo": null,
+  "createdAt": "2025-04-07T17:12:01.234Z",
+  "updatedAt": "2025-04-07T17:14:21.257Z"
+}
+```
+
+### Service delete
+
+**`DELETE /service/:id`**
 
 **Response (204 - NO CONTENT):**
