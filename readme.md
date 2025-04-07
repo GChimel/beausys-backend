@@ -213,6 +213,7 @@ Use to login in the system.
 
 - userId -> string UUID
 - name -> string
+- color -> hex
 - address -> string
 - address_number -> number
 - zipCode -> string
@@ -223,6 +224,7 @@ Use to login in the system.
 {
   "userId": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
   "name": "test",
+  "color": "#000",
   "address": "example street",
   "address_number": 90,
   "zipCode": "84500000",
@@ -237,6 +239,7 @@ Use to login in the system.
   "id": "a92d4a2c-1350-4763-a15e-ac309681fc8d",
   "userId": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
   "name": "test",
+  "color": "#000",
   "address": "example street",
   "addressNumber": 90,
   "zipCode": "84500000",
@@ -260,6 +263,7 @@ Use to login in the system.
   "id": "a92d4a2c-1350-4763-a15e-ac309681fc8d",
   "userId": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
   "name": "test",
+  "color": "#000",
   "address": "example street",
   "addressNumber": 90,
   "zipCode": "84500000",
@@ -281,6 +285,7 @@ Use to login in the system.
   "id": "a92d4a2c-1350-4763-a15e-ac309681fc8d",
   "userId": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
   "name": "test",
+  "color": "#000",
   "address": "example street",
   "addressNumber": 90,
   "zipCode": "84500000",

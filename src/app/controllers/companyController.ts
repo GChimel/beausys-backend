@@ -6,6 +6,15 @@ import { UserService } from "../services/userService";
 const schema = z.object({
   userId: z.string().uuid(),
   name: z.string(),
+  color: z.string().refine(
+    (val) => {
+      if (!val) return true;
+      return /^#([0-9A-F]{3}){1,2}$/i.test(val);
+    },
+    {
+      message: "Color must be a HEX",
+    }
+  ),
   address: z.string(),
   addressNumber: z.number(),
   zipCode: z.string(),
@@ -38,6 +47,7 @@ export class CompanyController {
       const company = await CompanyService.create({
         userId: body.userId,
         address: body.address,
+        color: body.color,
         addressNumber: body.addressNumber,
         zipCode: body.zipCode,
         cellPhone: body.cellPhone,

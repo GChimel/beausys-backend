@@ -55,6 +55,7 @@ model Company {
   id            String   @id @unique @default(uuid()) @db.Uuid
   userId        String   @map("user_id") @db.Uuid
   name          String
+  color         String?  @default("#000000")
   address       String
   addressNumber Int      @map("address_number")
   zipCode       String   @map("zip_code")
