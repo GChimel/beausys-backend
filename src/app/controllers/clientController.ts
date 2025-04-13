@@ -83,4 +83,26 @@ export class ClientController {
       throw error;
     }
   }
+
+  static async findByName(request: FastifyRequest, reply: FastifyReply) {
+    const { companyId } = z
+      .object({
+        companyId: z.string().uuid(),
+      })
+      .parse(request.query);
+
+    const { clientName } = z
+      .object({
+        clientName: z.string(),
+      })
+      .parse(request.params);
+
+    try {
+      const clients = await ClientService.findByName(companyId, clientName);
+
+      return reply.status(200).send(clients);
+    } catch (error) {
+      throw error;
+    }
+  }
 }

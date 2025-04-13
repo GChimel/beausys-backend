@@ -25,6 +25,15 @@ export class CompanyService {
     return prismaClient.company.findMany({ where: { userId } });
   }
 
+  static async findByEmailAndUserId(email: string, userId: string) {
+    return prismaClient.company.findFirst({
+      where: {
+        userId,
+        AND: { email },
+      },
+    });
+  }
+
   static async update(
     companyId: string,
     data: Prisma.CompanyUncheckedUpdateInput

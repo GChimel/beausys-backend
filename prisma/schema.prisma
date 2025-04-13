@@ -55,6 +55,7 @@ model Company {
   id            String   @id @unique @default(uuid()) @db.Uuid
   userId        String   @map("user_id") @db.Uuid
   name          String
+  email         String   @unique
   color         String?  @default("#000000")
   address       String
   addressNumber Int      @map("address_number")
@@ -102,22 +103,22 @@ model Client {
   registeredAt DateTime @map("registered_at")
 
   company      Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  Schedule     Schedule?
+  Schedule     Schedule[]
   RefreshToken RefreshToken[]
 
   @@map("client")
 }
 
 model Service {
-  id           String   @id @unique @default(uuid()) @db.Uuid
-  companyId    String   @map("company_id") @db.Uuid
-  name         String
-  description  String
-  expectedTime String   @map("expected_time")
-  price        Float
-  photo        String?
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id              String   @id @unique @default(uuid()) @db.Uuid
+  companyId       String   @map("company_id") @db.Uuid
+  name            String
+  description     String
+  expectedMinutes Int      @map("expected_minutes")
+  price           Float
+  photo           String?
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   company         Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
   ScheduleService ScheduleService[]
@@ -125,14 +126,21 @@ model Service {
   @@map("services")
 }
 
+enum Situation {
+  PENDING
+  CONFIRMED
+  CANCELED
+  DONE
+}
+
 model Schedule {
-  id          String   @id @unique @default(uuid()) @db.Uuid
-  companyId   String   @map("company_id") @db.Uuid
-  availableId String   @unique @map("available_id") @db.Uuid
-  clientId    String   @unique @map("client_id") @db.Uuid
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  done        Boolean  @default(false)
+  id          String    @id @unique @default(uuid()) @db.Uuid
+  companyId   String    @map("company_id") @db.Uuid
+  availableId String    @unique @map("available_id") @db.Uuid
+  clientId    String    @map("client_id") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  situation   Situation
 
   ScheduleProduct ScheduleProduct[]
   ScheduleService ScheduleService[]

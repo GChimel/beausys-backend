@@ -6,6 +6,7 @@ import { UserService } from "../services/userService";
 const schema = z.object({
   userId: z.string().uuid(),
   name: z.string(),
+  email: z.string().email(),
   color: z.string().refine(
     (val) => {
       if (!val) return true;
@@ -35,18 +36,24 @@ export class CompanyController {
       }
 
       // Verify if company already exists for same user
-      const companyExists = await CompanyService.findByUserId(
+      const companyNameExists = await CompanyService.findByUserId(
         body.userId,
         body.name
       );
 
-      if (companyExists) {
+      const companyEmailExists = await CompanyService.findByEmailAndUserId(
+        body.email,
+        body.userId
+      );
+
+      if (companyNameExists || companyEmailExists) {
         return reply.code(400).send({ message: "Company already exists" });
       }
 
       const company = await CompanyService.create({
         userId: body.userId,
         address: body.address,
+        email: body.email,
         color: body.color,
         addressNumber: body.addressNumber,
         zipCode: body.zipCode,

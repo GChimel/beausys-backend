@@ -8,7 +8,7 @@ const schema = z.object({
   name: z.string(),
   description: z.string(),
   price: z.number(),
-  expectedTime: z.string(),
+  expectedMinutes: z.number().int(),
   photo: z.string().optional(),
 });
 

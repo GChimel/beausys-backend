@@ -64,6 +64,11 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
     - [GET by id](#service-by-id)
     - [PUT](#update-service)
     - [DELETE by id](#service-delete)
+  - [Availabre Schedule](#availabe-schedule)
+    - [POST create](#create-available-schedule)
+  - [Schedule](#schedule)
+    - [POST create](#create-schedule)
+    - [GET all](#schedule-all-by-company)
 
 ---
 
@@ -227,6 +232,7 @@ Use to login in the system.
 - userId -> string UUID
 - name -> string
 - color -> hex
+- email -> string
 - address -> string
 - address_number -> number
 - zipCode -> string
@@ -238,6 +244,7 @@ Use to login in the system.
   "userId": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
   "name": "test",
   "color": "#000",
+  "email": "example@example.com",
   "address": "example street",
   "address_number": 90,
   "zipCode": "84500000",
@@ -253,6 +260,7 @@ Use to login in the system.
   "userId": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
   "name": "test",
   "color": "#000",
+  "email": "example@example.com",
   "address": "example street",
   "addressNumber": 90,
   "zipCode": "84500000",
@@ -277,6 +285,7 @@ Use to login in the system.
   "userId": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
   "name": "test",
   "color": "#000",
+  "email": "example@example.com",
   "address": "example street",
   "addressNumber": 90,
   "zipCode": "84500000",
@@ -299,6 +308,7 @@ Use to login in the system.
   "userId": "d2f1e3f9-d32a-4cc9-89c2-c196f223e730",
   "name": "test",
   "color": "#000",
+  "email": "example@example.com",
   "address": "example street",
   "addressNumber": 90,
   "zipCode": "84500000",
@@ -318,6 +328,7 @@ Use to login in the system.
 - userId -> string UUID
 - name -> string
 - color -> hex
+- email -> string
 - address -> string
 - address_number -> number
 - zipCode -> string
@@ -329,6 +340,7 @@ Use to login in the system.
   "userId": "f7e7373d-ab5f-4b95-b79d-6a172ad39a65",
   "name": "new name",
   "color": "#445760",
+  "email": "example@example.com",
   "address": "new address",
   "addressNumber": 99,
   "zipCode": "84500000",
@@ -344,6 +356,7 @@ Use to login in the system.
   "userId": "f7e7373d-ab5f-4b95-b79d-6a172ad39a65",
   "name": "new name",
   "color": "#445760",
+  "email": "example@example.com",
   "address": "new address",
   "addressNumber": 99,
   "zipCode": "84500000",
@@ -494,7 +507,7 @@ Use to login in the system.
 - name -> string
 - price -> number
 - description -> string
-- expectedTime -> string
+- expectedMinutes -> number
 - photo -> string | null
 
 ```json
@@ -503,7 +516,7 @@ Use to login in the system.
   "name": "example",
   "price": 100.0,
   "description": "example",
-  "expectedTime": "30 minutes"
+  "expectedMinutes": 30
 }
 ```
 
@@ -515,7 +528,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "example",
   "description": "example",
-  "expectedTime": "30 minutes",
+  "expectedMinutes": 30,
   "price": 100,
   "photo": null,
   "createdAt": "2025-04-07T17:12:01.234Z",
@@ -538,7 +551,7 @@ Use to login in the system.
     "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
     "name": "example",
     "description": "example",
-    "expectedTime": "30 minutes",
+    "expectedMinutes": "30"
     "price": 100,
     "photo": null,
     "createdAt": "2025-04-07T17:12:01.234Z",
@@ -559,7 +572,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "example",
   "description": "example",
-  "expectedTime": "30 minutes",
+  "expectedMinutes": 30
   "price": 100,
   "photo": null,
   "createdAt": "2025-04-07T17:12:01.234Z",
@@ -575,6 +588,7 @@ Use to login in the system.
 
 - companyId -> string UUID
 - name -> string
+- expectedMinutes -> number
 - price -> number
 - description -> string
 - photo -> string | null
@@ -585,7 +599,7 @@ Use to login in the system.
   "name": "new example",
   "price": 10.0,
   "description": "new example",
-  "expectedTime": "5 minutes"
+  "expectedMinutes": 5
 }
 ```
 
@@ -597,7 +611,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "new example",
   "description": "new example",
-  "expectedTime": "5 minutes",
+  "expectedMinutes": 5,
   "price": 10,
   "photo": null,
   "createdAt": "2025-04-07T17:12:01.234Z",
@@ -610,3 +624,137 @@ Use to login in the system.
 **`DELETE /service/:id`**
 
 **Response (204 - NO CONTENT):**
+
+## Availabe Schedule
+
+Available opening hours
+
+### Create available schedule
+
+**`POST /schedule/available`**
+
+**Request body:**
+
+- companyId -> string UUID
+- startTime -> string
+- endTime -> string
+- intervalInMinutes -> number
+- days -> `arr<Number>`
+- periodStart -> string
+- periodEnd -> string
+
+days: <br>
+0 -> Monday<br>
+6 -> Saturday
+
+```json
+{
+  "companyId": "08db8ff9-194c-4c5e-9048-fa29a5e7b66c",
+  "startTime": "08:00",
+  "endTime": "17:00",
+  "intervalInMinutes": 30,
+  "days": [1, 2, 3, 4, 5],
+  "periodStart": "2025-04-13",
+  "periodEnd": "2025-04-20"
+}
+```
+
+**Response (201 CREATED):**
+
+```json
+{
+  "message": "Schedules created",
+  "count": 90
+}
+```
+
+## Schedule
+
+### Create schedule
+
+**`POST /schedule`**
+
+The schedule status is `CONFIRMED` by default, but it can be `PENDING` if the total expected duration of all services exceeds the available schedule time..
+
+**Request body:**
+
+- companyId -> string UUID
+- clientId -> string UUID
+- availableScheduleId -> string UUID
+- products -> obj OPTIONAL
+- services -> obj
+
+```json
+products: [
+  {
+    "productId": "7a38386d-ddb2-43e9-99fa-bd97303f3fb9",
+    "quantity": 1,
+    "discount": 0
+  }
+],
+services: [
+  {
+    "serviceId": "c3fdda2c-0d79-4296-88ae-90243e14322b"
+  },
+]
+```
+
+Example:
+
+```json
+{
+  "companyId": "08db8ff9-194c-4c5e-9048-fa29a5e7b66c",
+  "clientId": "c166669d-2eb7-4d3c-8df5-7c3411054c3d",
+  "availableScheduleId": "0a7f1690-8b64-48fe-9023-cab6662fa6c3",
+  "services": [
+    {
+      "serviceId": "c3fdda2c-0d79-4296-88ae-90243e14322b"
+    },
+    {
+      "serviceId": "c3fdda2c-0d79-4296-88ae-90243e14322b"
+    },
+    {
+      "serviceId": "c3fdda2c-0d79-4296-88ae-90243e14322b"
+    },
+    {
+      "serviceId": "c3fdda2c-0d79-4296-88ae-90243e14322b"
+    }
+  ]
+}
+```
+
+**Response (201 CREATED):**
+
+```json
+
+```
+
+**Response (409 CONFLICT):**
+<br>
+This erros hapens when you make a post with a already used available schedule.
+
+```json
+ "message": "Schedule with this available schedule already exists"
+```
+
+### Schedule all (by company)
+
+**`GET /schedule?companyId=`**
+
+- company id by query param
+
+**Response (200 Ok):**
+
+```json
+[
+  {
+    "id": "a216372d-524a-4422-b432-3ed4a2882cee",
+    "companyId": "08db8ff9-194c-4c5e-9048-fa29a5e7b66c",
+    "availableId": "04442202-e1ea-4019-aaf3-c821c8dc0956",
+    "clientId": "c166669d-2eb7-4d3c-8df5-7c3411054c3d",
+    "createdAt": "2025-04-13T18:40:17.590Z",
+    "updatedAt": "2025-04-13T18:40:17.590Z",
+    "situation": "CONFIRMED"
+  }
+]
+```
