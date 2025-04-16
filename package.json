@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "start": "node build/server.ts",
     "lint": "echo 'lint'",
     "build": "tsup --config tsup.config.ts",
     "typecheck": "tsc --noEmit",
