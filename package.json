@@ -8,6 +8,7 @@
     "start": "node dist/server.js",
     "lint": "echo 'lint'",
     "build": "tsup --config tsup.config.ts",
+    "prisma:prod": "prisma migrate deploy",
     "typecheck": "tsc --noEmit",
     "test": "echo 'testes'"
   },
