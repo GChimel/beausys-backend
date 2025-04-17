@@ -1,6 +1,6 @@
 import FastifyCORS from "@fastify/cors";
 import FastifyJWT from "@fastify/jwt";
-import { PrismaClientInitializationError } from "@prisma/client/runtime/library";
+import { Prisma } from "@prisma/client";
 import Fastify from "fastify";
 import { ZodError } from "zod";
 import { ENV_VARS } from "./app/config/env";
@@ -37,7 +37,7 @@ app.setErrorHandler((error, _, reply) => {
     });
   }
 
-  if (error instanceof PrismaClientInitializationError) {
+  if (error instanceof Prisma.PrismaClientInitializationError) {
     return reply.code(400).send({
       error: true,
       message: "Database connection error.",
