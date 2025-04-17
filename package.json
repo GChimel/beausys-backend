@@ -5,12 +5,13 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "start": "node dist/server.js",
     "lint": "echo 'lint'",
     "build": "tsup --config tsup.config.ts",
     "prisma:prod": "prisma migrate deploy",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'testes'"
+    "test": "echo 'testes'",
+    "prisma:migration": "npx prisma migrate dev --name init",
+    "start": "npm run prisma:migration && node server.js"
   },
   "devDependencies": {
     "@prisma/client": "^6.4.1",

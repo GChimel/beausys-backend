@@ -10,6 +10,7 @@ const app = Fastify();
 
 const jwtSecret = ENV_VARS.JWT_SECRET;
 const jwtExpiresIn = ENV_VARS.JWT_EXPIRES_IN;
+const appPort = ENV_VARS.PORT || 3000;
 
 if (!jwtSecret || !jwtExpiresIn) {
   throw new Error("JWT_SECRET or JWT_EXPIRES_IN is not defined");
@@ -57,8 +58,8 @@ app.setErrorHandler((error, _, reply) => {
 
 app
   .listen({
-    port: 3000,
+    port: Number(appPort),
   })
   .then(() => {
-    console.log("HTTP server running on http://localhost:3000");
+    console.log(`HTTP server running on http://localhost:3000 ${appPort}`);
   });
