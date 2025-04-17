@@ -59,7 +59,8 @@ app.setErrorHandler((error, _, reply) => {
 app
   .listen({
     port: Number(appPort),
+    host: "::",
   })
   .then(() => {
-    console.log(`HTTP server running on http://localhost:3000 ${appPort}`);
+    console.log(`HTTP server running on ${appPort}`);
   });
