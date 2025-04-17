@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "echo 'testes'",
     "prisma:migration": "npx prisma migrate dev --name init",
-    "start": "npm run prisma:migration && node server.js"
+    "start": "npm run prisma:migration && node dist/server.js"
   },
   "devDependencies": {
     "@prisma/client": "^6.4.1",
