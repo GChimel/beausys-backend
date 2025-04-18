@@ -15,8 +15,11 @@ export class ClientService {
   }
 
   static async findByEmail(companyId: string, email: string) {
-    return prismaClient.client.findUnique({
-      where: { email, AND: { companyId } },
+    return prismaClient.client.findFirst({
+      where: {
+        email,
+        companyId,
+      },
     });
   }
 
