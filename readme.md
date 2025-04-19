@@ -69,6 +69,12 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
   - [Schedule](#schedule)
     - [POST create](#create-schedule)
     - [GET all](#schedule-all-by-company)
+    - [GET by id](#schedule-by-id)
+    - [DELETE](#schedule-delete)
+  - [Clients](#clients)
+    - [POST create `register`](#create-client)
+    - [GET all](#find-all-clients-by-company)
+    - [GET by name](#find-clients-by-name)
 
 ---
 
@@ -755,6 +761,121 @@ This erros hapens when you make a post with a already used available schedule.
     "createdAt": "2025-04-13T18:40:17.590Z",
     "updatedAt": "2025-04-13T18:40:17.590Z",
     "situation": "CONFIRMED"
+  }
+]
+```
+
+### Schedule by id
+
+**`GET /schedule/${id}`**
+
+**Response (200 Ok):**
+
+```json
+{
+  "id": "47d8ced8-4cb1-43ef-aba8-645beeaa431f",
+  "companyId": "ddfb3a99-1581-4017-9a1b-babccd4dc2e8",
+  "availableId": "0fb121ff-f3b2-4416-8e8e-73acb10f28f8",
+  "clientId": "e3e31b28-178c-4059-a886-b0dd44eba8fe",
+  "createdAt": "2025-04-19T12:32:09.965Z",
+  "updatedAt": "2025-04-19T12:32:09.965Z",
+  "situation": "PENDING"
+}
+```
+
+### Schedule delete
+
+Deleting a schedule maked the isBooked in AvailableSchedule returns to false.
+
+**`DELETE /schedule/${id}:`**
+
+**Response (204 - NO CONTENT):**
+
+## Clients
+
+### Create client
+
+Each customer is created as a record in the system and is per company
+
+**`POST /client`**
+
+**Request body:**
+
+- companyId -> string UUID
+- name -> string
+- email -> string
+- password -> string
+- cellPhone -> string
+- googleId -> string | null
+- photo -> string | null
+
+Example:
+
+```json
+{
+  "companyId": "08db8ff9-194c-4c5e-9048-fa29a5e7b66c",
+  "name": "Jhon",
+  "email": "jhon@eexample.com",
+  "password": "123456",
+  "cellPhone": "42999999999"
+}
+```
+
+**Response (201 CREATED):**
+
+```json
+{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlM2UzMWIyOC0xNzhjLTQwNTktYTg4Ni1iMGRkNDRlYmE4ZmUiLCJpYXQiOjE3NDUwNjQyMDYsImV4cCI6MTc0NTE1MDYwNn0.U8S3qIjulcjcsxmo467r1hG6ddoL2dY0fWeiFGQhclA",
+  "refreshToken": "d60528fe-d25b-4b71-8fd7-cc0a90a6c537"
+}
+```
+
+### Find all clients (by company)
+
+**`GET /client?companyId=`**
+
+- company id by query param
+
+**Response (200 Ok):**
+
+```json
+[
+  {
+    "id": "e3e31b28-178c-4059-a886-b0dd44eba8fe",
+    "companyId": "ddfb3a99-1581-4017-9a1b-babccd4dc2e8",
+    "name": "Jhon",
+    "email": "jhon@example.com",
+    "password": "$2b$08$pIZ0pz0v4iKqchbC71yqYuEJjqephkdvz9/ZYFrxSwjhZlGoWEllO",
+    "cellPhone": "42999999999",
+    "googleId": null,
+    "photo": null,
+    "registeredAt": "2025-04-19T12:03:26.728Z"
+  }
+]
+```
+
+### Find clients by name
+
+**`GET /client/${name}?companyId=`**
+
+- company id by query param
+
+**Reponse (200 Ok):**
+
+req: /client/Jho?companyId=ddfb3a99-1581-4017-9a1b-babccd4dc2e8
+
+```json
+[
+  {
+    "id": "e3e31b28-178c-4059-a886-b0dd44eba8fe",
++    "companyId": "ddfb3a99-1581-4017-9a1b-babccd4dc2e8",
+    "name": "Jhon",
+    "email": "jhon@example.com",
+    "password": "$2b$08$pIZ0pz0v4iKqchbC71yqYuEJjqephkdvz9/ZYFrxSwjhZlGoWEllO",
+    "cellPhone": "42999999999",
+    "googleId": null,
+    "photo": null,
+    "registeredAt": "2025-04-19T12:03:26.728Z"
   }
 ]
 ```

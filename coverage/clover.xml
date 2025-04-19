@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1745008024716" clover="3.2.0">
-  <project timestamp="1745008024716" name="All files">
+<coverage generated="1745062970839" clover="3.2.0">
+  <project timestamp="1745062970839" name="All files">
     <metrics statements="61" coveredstatements="46" conditionals="2" coveredconditionals="0" methods="18" coveredmethods="8" elements="81" coveredelements="54" complexity="0" loc="61" ncloc="61" packages="4" files="6" classes="6"/>
     <package name="config">
       <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
@@ -74,8 +74,8 @@
       </file>
       <file name="companyService.ts" path="/home/chimel/Projects/beausys-backend/src/app/services/companyService.ts">
         <metrics statements="9" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="7" coveredmethods="0"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="4" count="1" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
         <line num="6" count="0" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
         <line num="14" count="0" type="stmt"/>

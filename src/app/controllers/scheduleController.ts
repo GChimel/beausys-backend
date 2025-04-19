@@ -195,7 +195,13 @@ export class ScheduleController {
         return reply.code(404).send({ message: "Schedule not found" });
       }
 
-      await ScheduleService.delete(id);
+      await Promise.all([
+        await AvailableScheduleService.udpate(schedule.availableId, {
+          isBooked: false,
+        }),
+
+        await ScheduleService.delete(id),
+      ]);
 
       return reply.status(204).send();
     } catch (error) {

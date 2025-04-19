@@ -87,21 +87,15 @@ export class AvailableScheduleController {
   }
 
   static async findAll(request: FastifyRequest, reply: FastifyReply) {
-    const { companyId } = z
-      .object({
-        companyId: z.string().uuid(),
-      })
-      .parse(request.query);
+    const schema = z.object({
+      companyId: z.string().uuid(),
+      initialDate: z.string(),
+      finalDate: z.string(),
+    });
 
-    const schema = z
-      .object({
-        initialDate: z.string(),
-        finalDate: z.string(),
-      })
-      .parse(request.body);
+    const { initialDate, finalDate, companyId } = schema.parse(request.params);
 
     try {
-      const { initialDate, finalDate } = schema;
       const schedules = await AvailableScheduleService.findAll(
         companyId,
         new Date(initialDate),
