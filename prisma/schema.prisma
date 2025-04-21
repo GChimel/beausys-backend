@@ -80,6 +80,7 @@ model Product {
   companyId   String   @map("company_id") @db.Uuid
   name        String
   price       Float
+  quantity    Int
   description String
   photo       String?
   createdAt   DateTime @default(now()) @map("created_at")

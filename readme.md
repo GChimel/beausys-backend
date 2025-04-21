@@ -390,6 +390,7 @@ Use to login in the system.
 - companyId -> string UUID
 - name -> string
 - price -> number
+- quantity -> number (int)
 - description -> string
 - photo -> string | null
 
@@ -398,6 +399,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "example",
   "price": 200.56,
+  "quantity": 20,
   "description": "product example"
 }
 ```
@@ -410,6 +412,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "example",
   "price": 200.56,
+  "quantity": 20,
   "description": "product example",
   "photo": null,
   "createdAt": "2025-04-07T16:51:05.595Z",
@@ -432,6 +435,7 @@ Use to login in the system.
     "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
     "name": "example",
     "price": 200.56,
+    "quantity": 20,
     "description": "product example",
     "photo": null,
     "createdAt": "2025-04-07T16:51:05.595Z",
@@ -452,6 +456,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "example",
   "price": 200.56,
+  "quantity": 20,
   "description": "product example",
   "photo": null,
   "createdAt": "2025-04-07T16:51:05.595Z",
@@ -468,6 +473,7 @@ Use to login in the system.
 - companyId -> string UUID
 - name -> string
 - price -> number
+- quantity -> number (int)
 - description -> string
 - photo -> string | null
 
@@ -476,6 +482,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "example2",
   "price": 200.56,
+  "quantity": 10,
   "description": "new example"
 }
 ```
@@ -488,6 +495,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "example2",
   "price": 200.56,
+  "quantity": 10,
   "description": "new example",
   "photo": null,
   "createdAt": "2025-04-07T16:51:05.595Z",
