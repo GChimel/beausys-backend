@@ -64,7 +64,7 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
     - [GET by id](#service-by-id)
     - [PUT](#update-service)
     - [DELETE by id](#service-delete)
-  - [Availabre Schedule](#availabe-schedule)
+  - [Available Schedule](#availabe-schedule)
     - [POST create](#create-available-schedule)
   - [Schedule](#schedule)
     - [POST create](#create-schedule)
