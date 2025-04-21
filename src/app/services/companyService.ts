@@ -10,7 +10,7 @@ export class CompanyService {
     return prismaClient.company.create({ data });
   }
 
-  static async findByUserId(userId: string, companyName: string) {
+  static async findByUserIdAndName(userId: string, companyName: string) {
     return prismaClient.company.findFirst({
       where: {
         userId,
