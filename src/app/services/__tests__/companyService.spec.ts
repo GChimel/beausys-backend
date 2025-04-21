@@ -1,39 +1,73 @@
+import { prismaClient } from "../../lib/prismaClient";
+import { CompanyService } from "../companyService";
+
 jest.mock("../../lib/prismaClient", () => ({
   prismaClient: {
-    client: {
+    company: {
       create: jest.fn(),
       findUnique: jest.fn(),
       findMany: jest.fn(),
       findFirst: jest.fn(),
-      delete: jest.fn(),
-      update: jest.fn(),
     },
   },
 }));
 
 describe("CompanyService", () => {
-  const mockCompany = {
-    userId: "e5c425a6-ffe6-41c7-81ea-c77800a99eab",
-    name: "company",
-    color: "#384243",
-    email: "teste@teste.com",
-    address: "example street",
-    addressNumber: 90,
-    zipCode: 84500000,
-    cellPhone: 1199999999,
-  };
+  const mockCompanys = [
+    {
+      id: "1",
+      userId: "a8c425a6-ffe6-41c7-81ea-c77800a99eab",
+      name: "company A",
+      color: "#384243",
+      email: "teste@teste.com",
+      address: "example street",
+      addressNumber: 90,
+      zipCode: 84500000,
+      cellPhone: 11999999999,
+    },
+    {
+      id: "2",
+      userId: "e5c425a6-ffe6-41c7-81ea-c77800a99eab",
+      name: "company B",
+      color: "#384243",
+      email: "teste@teste.com",
+      address: "example street",
+      addressNumber: 90,
+      zipCode: 84500000,
+      cellPhone: 11999999999,
+    },
+  ];
 
-  it("should create a company", async () => {
-    // (prismaClient.company.create as jest.Mock).mockResolvedValue(mockCompany);
+  let companys = [...mockCompanys];
 
-    // const result = await CompanyService.create(mockCompany as any);
-    // console.log(result);
-    // expect(result).toEqual(mockCompany);
+  beforeEach(() => {
+    companys = [...mockCompanys];
+  });
 
-    // expect(prismaClient.company.create).toHaveBeenCalledWith({
-    //   data: mockCompany,
-    // });
+  it("Should create a company", async () => {
+    (prismaClient.company.create as jest.Mock).mockResolvedValue(
+      mockCompanys[0]
+    );
+    const result = await CompanyService.create(mockCompanys[0] as any);
 
-    expect(1 + 1).toEqual(2);
+    expect(result).toEqual(mockCompanys[0]);
+    expect(prismaClient.company.create).toHaveBeenCalledWith({
+      data: mockCompanys[0],
+    });
+  });
+
+  it("Should find a company by id", async () => {
+    (prismaClient.company.findUnique as jest.Mock).mockImplementation(
+      ({ where }) => {
+        return companys.find((c) => c.id === where.id);
+      }
+    );
+
+    const result = await CompanyService.findById("1");
+
+    expect(prismaClient.company.findUnique).toHaveBeenCalledWith({
+      where: { id: "1" },
+    });
+    expect(result).toEqual(mockCompanys[0]);
   });
 });

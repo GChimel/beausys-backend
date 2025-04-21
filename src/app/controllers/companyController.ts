@@ -36,7 +36,7 @@ export class CompanyController {
       }
 
       // Verify if company already exists for same user
-      const companyNameExists = await CompanyService.findByUserId(
+      const companyNameExists = await CompanyService.findByUserIdAndName(
         body.userId,
         body.name
       );
