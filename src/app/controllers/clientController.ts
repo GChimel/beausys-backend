@@ -2,6 +2,7 @@ import { hash } from "bcryptjs";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { ENV_VARS } from "../config/env";
+import { getUserId } from "../helper/getUserId";
 import { ClientService } from "../services/clientService";
 import { CompanyService } from "../services/companyService";
 import { RefreshTokenService } from "../services/refreshTokenService";
@@ -74,8 +75,15 @@ export class ClientController {
         companyId: z.string().uuid(),
       })
       .parse(request.query);
+    const userId = getUserId(request);
 
     try {
+      const company = await CompanyService.findById(companyId);
+
+      if (!company || company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
+      }
+
       const clients = await ClientService.findAll(companyId);
 
       return reply.status(200).send(clients);
@@ -97,7 +105,14 @@ export class ClientController {
       })
       .parse(request.params);
 
+    const userId = getUserId(request);
+
     try {
+      const company = await CompanyService.findById(companyId);
+      if (!company || company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
+      }
+
       const clients = await ClientService.findByName(companyId, clientName);
 
       return reply.status(200).send(clients);
