@@ -71,6 +71,7 @@ model Company {
   Schedule          Schedule[]
   AvailableSchedule AvailableSchedule[]
   Client            Client[]
+  Sale              Sale[]
 
   @@map("companies")
 }
@@ -80,6 +81,7 @@ model Product {
   companyId   String   @map("company_id") @db.Uuid
   name        String
   price       Float
+  quantity    Int
   description String
   photo       String?
   createdAt   DateTime @default(now()) @map("created_at")
@@ -87,6 +89,7 @@ model Product {
 
   company         Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
   ScheduleProduct ScheduleProduct[]
+  SaleProduct     SaleProduct[]
 
   @@map("products")
 }
@@ -105,6 +108,7 @@ model Client {
   company      Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   Schedule     Schedule[]
   RefreshToken RefreshToken[]
+  Sale         Sale[]
 
   @@map("client")
 }
@@ -148,6 +152,7 @@ model Schedule {
   company           Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
   availableSchedule AvailableSchedule @relation(fields: [availableId], references: [id], onDelete: Cascade)
   client            Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  Sale              Sale[]
 
   @@map("schedules")
 }
@@ -190,4 +195,31 @@ model ScheduleService {
   service  Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@map("schedule_services")
+}
+
+model Sale {
+  id         String   @id @unique @default(uuid()) @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at")
+  isDeleted  Boolean  @default(false)
+  total      Float
+  companyId  String   @map("company_id") @db.Uuid
+  clientId   String   @map("client_id") @db.Uuid
+  scheduleId String?  @map("schedule_id") @db.Uuid
+
+  SaleProduct SaleProduct[]
+
+  client   Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  schedule Schedule? @relation(fields: [scheduleId], references: [id])
+  company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model SaleProduct {
+  id        String @id @unique @default(uuid()) @db.Uuid
+  saleId    String @map("sale_id") @db.Uuid
+  productId String @map("product_id") @db.Uuid
+  quantity  Int    @default(1)
+  discount  Float?
+
+  sale    Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
 }

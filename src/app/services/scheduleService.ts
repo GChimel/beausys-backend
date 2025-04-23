@@ -23,7 +23,16 @@ export class ScheduleService {
   }
 
   static async findById(id: string) {
-    return prismaClient.schedule.findUnique({ where: { id } });
+    return prismaClient.schedule.findUnique({
+      where: { id },
+      include: {
+        company: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
   }
 
   static async delete(id: string) {

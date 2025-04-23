@@ -41,7 +41,7 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
 
 - [With authentication](#with-authentication)
 
-  - All of these requests require a **Bearer Token** in the `Authorization` header.
+  - All of these requests require a **Bearer Token** in the `Authorization` header. The `sub` of the toke is used to verify if the operation is valid or not.
 
   - [User](#user)
     - [GET by id](#user-by-id)
@@ -75,6 +75,7 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
     - [POST create `register`](#create-client)
     - [GET all](#find-all-clients-by-company)
     - [GET by name](#find-clients-by-name)
+  - [Sale](#sale)
 
 ---
 
@@ -235,7 +236,6 @@ Use to login in the system.
 
 **Request body:**
 
-- userId -> string UUID
 - name -> string
 - color -> hex
 - email -> string
@@ -279,9 +279,7 @@ Use to login in the system.
 
 ### Company all (by user)
 
-**`GET /company?userId=`**
-
-- id by query param
+**`GET /company`**
 
 **Response (200 Ok):**
 
@@ -331,7 +329,6 @@ Use to login in the system.
 
 **Request body:**
 
-- userId -> string UUID
 - name -> string
 - color -> hex
 - email -> string
@@ -343,7 +340,6 @@ Use to login in the system.
 
 ```json
 {
-  "userId": "f7e7373d-ab5f-4b95-b79d-6a172ad39a65",
   "name": "new name",
   "color": "#445760",
   "email": "example@example.com",
@@ -390,6 +386,7 @@ Use to login in the system.
 - companyId -> string UUID
 - name -> string
 - price -> number
+- quantity -> number (int)
 - description -> string
 - photo -> string | null
 
@@ -398,6 +395,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "example",
   "price": 200.56,
+  "quantity": 20,
   "description": "product example"
 }
 ```
@@ -410,6 +408,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "example",
   "price": 200.56,
+  "quantity": 20,
   "description": "product example",
   "photo": null,
   "createdAt": "2025-04-07T16:51:05.595Z",
@@ -432,6 +431,7 @@ Use to login in the system.
     "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
     "name": "example",
     "price": 200.56,
+    "quantity": 20,
     "description": "product example",
     "photo": null,
     "createdAt": "2025-04-07T16:51:05.595Z",
@@ -452,6 +452,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "example",
   "price": 200.56,
+  "quantity": 20,
   "description": "product example",
   "photo": null,
   "createdAt": "2025-04-07T16:51:05.595Z",
@@ -468,6 +469,7 @@ Use to login in the system.
 - companyId -> string UUID
 - name -> string
 - price -> number
+- quantity -> number (int)
 - description -> string
 - photo -> string | null
 
@@ -476,6 +478,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "example2",
   "price": 200.56,
+  "quantity": 10,
   "description": "new example"
 }
 ```
@@ -488,6 +491,7 @@ Use to login in the system.
   "companyId": "70c598be-7187-40ca-8edc-20d8092a335e",
   "name": "example2",
   "price": 200.56,
+  "quantity": 10,
   "description": "new example",
   "photo": null,
   "createdAt": "2025-04-07T16:51:05.595Z",
@@ -878,4 +882,54 @@ req: /client/Jho?companyId=ddfb3a99-1581-4017-9a1b-babccd4dc2e8
     "registeredAt": "2025-04-19T12:03:26.728Z"
   }
 ]
+```
+
+## Sale
+
+### Create sale
+
+A sale can receive a scheduleId to get it products and a arr of products.
+
+**`POST /sale`**
+
+**Request body:**
+
+- companyId -> string UUID
+- clientId -> string UUID
+- total -> number
+- scheduleId -> string UUID | null
+- products -> obj OPTIONAL
+
+```json
+products: [
+  {
+    "productId": "7a38386d-ddb2-43e9-99fa-bd97303f3fb9",
+    "quantity": 1,
+    "discount": 0
+  }
+],
+
+```
+
+Example:
+
+```json
+{
+  "companyId": "ddfb3a99-1581-4017-9a1b-babccd4dc2e8",
+  "clientId": "e3e31b28-178c-4059-a886-b0dd44eba8fe",
+  "total": 401.12,
+  "products": [
+    {
+      "productId": "eb716111-aff3-497d-9d6a-d5cbe45f7699",
+      "quantity": 2,
+      "discount": 0
+    }
+  ]
+}
+```
+
+**Response (201 CREATED):**
+
+```json
+
 ```

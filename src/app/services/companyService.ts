@@ -25,11 +25,10 @@ export class CompanyService {
     return prismaClient.company.findMany({ where: { userId } });
   }
 
-  static async findByEmailAndUserId(email: string, userId: string) {
-    return prismaClient.company.findFirst({
+  static async findByEmail(email: string) {
+    return prismaClient.company.findUnique({
       where: {
-        userId,
-        AND: { email },
+        email,
       },
     });
   }

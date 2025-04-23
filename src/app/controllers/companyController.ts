@@ -1,10 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
+import { getUserId } from "../helper/getUserId";
 import { CompanyService } from "../services/companyService";
 import { UserService } from "../services/userService";
 
 const schema = z.object({
-  userId: z.string().uuid(),
   name: z.string(),
   email: z.string().email(),
   color: z.string().refine(
@@ -26,40 +26,29 @@ const schema = z.object({
 export class CompanyController {
   static async create(request: FastifyRequest, reply: FastifyReply) {
     const body = schema.parse(request.body);
+    const userId = getUserId(request);
 
     try {
       //Verify if user exists
-      const user = await UserService.findById(body.userId);
+      const user = await UserService.findById(userId);
 
       if (!user) {
         return reply.code(404).send({ message: "User not found" });
       }
 
       // Verify if company already exists for same user
-      const companyNameExists = await CompanyService.findByUserIdAndName(
-        body.userId,
-        body.name
-      );
-
-      const companyEmailExists = await CompanyService.findByEmailAndUserId(
-        body.email,
-        body.userId
-      );
+      const [companyNameExists, companyEmailExists] = await Promise.all([
+        CompanyService.findByUserIdAndName(userId, body.name),
+        CompanyService.findByEmail(body.email),
+      ]);
 
       if (companyNameExists || companyEmailExists) {
         return reply.code(400).send({ message: "Company already exists" });
       }
 
       const company = await CompanyService.create({
-        userId: body.userId,
-        address: body.address,
-        email: body.email,
-        color: body.color,
-        addressNumber: body.addressNumber,
-        zipCode: body.zipCode,
-        cellPhone: body.cellPhone,
-        name: body.name,
-        photo: body.photo,
+        userId,
+        ...body,
         createdAt: new Date(),
       });
 
@@ -90,11 +79,7 @@ export class CompanyController {
   }
 
   static async findAll(request: FastifyRequest, reply: FastifyReply) {
-    const { userId } = z
-      .object({
-        userId: z.string().uuid(),
-      })
-      .parse(request.query);
+    const userId = getUserId(request);
 
     try {
       const companies = await CompanyService.findAll(userId);
@@ -111,22 +96,19 @@ export class CompanyController {
         id: z.string().uuid(),
       })
       .parse(request.params);
-
     const body = schema.parse(request.body);
+    const userId = getUserId(request);
 
     try {
-      //Verify if user exists
-      const user = await UserService.findById(body.userId);
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
       // Verify if company exists
       const companyExists = await CompanyService.findById(id);
 
       if (!companyExists) {
         return reply.code(404).send({ message: "Company not found" });
+      }
+
+      if (companyExists.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
       }
 
       // update company
@@ -145,12 +127,18 @@ export class CompanyController {
       })
       .parse(request.params);
 
+    const userId = getUserId(request);
+
     try {
       // Verify if company exists
       const company = await CompanyService.findById(id);
 
       if (!company) {
         return reply.code(404).send({ message: "Company not found" });
+      }
+
+      if (company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
       }
 
       await CompanyService.delete(id);
