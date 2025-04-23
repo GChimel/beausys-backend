@@ -7,7 +7,16 @@ export class ServiceService {
   }
 
   static async findById(id: string) {
-    return prismaClient.service.findUnique({ where: { id } });
+    return prismaClient.service.findUnique({
+      where: { id },
+      include: {
+        company: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
   }
 
   static async findAll(companyId: string) {
