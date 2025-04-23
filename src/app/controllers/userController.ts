@@ -1,6 +1,7 @@
 import { compare, hash } from "bcryptjs";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
+import { getUserId } from "../helper/getUserId";
 import { UserService } from "../services/userService";
 
 export class UserController {
@@ -65,7 +66,7 @@ export class UserController {
       })
       .parse(request.params);
 
-    console.log(id);
+    const userId = getUserId(request);
 
     try {
       // Verify if user exists
@@ -73,6 +74,10 @@ export class UserController {
 
       if (!user) {
         return reply.code(404).send({ message: "User not found" });
+      }
+
+      if (user.id !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
       }
 
       return reply.status(200).send(user);
