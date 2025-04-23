@@ -41,7 +41,7 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
 
 - [With authentication](#with-authentication)
 
-  - All of these requests require a **Bearer Token** in the `Authorization` header.
+  - All of these requests require a **Bearer Token** in the `Authorization` header. The `sub` of the toke is used to verify if the operation is valid or not.
 
   - [User](#user)
     - [GET by id](#user-by-id)
@@ -236,7 +236,6 @@ Use to login in the system.
 
 **Request body:**
 
-- userId -> string UUID
 - name -> string
 - color -> hex
 - email -> string
@@ -280,9 +279,7 @@ Use to login in the system.
 
 ### Company all (by user)
 
-**`GET /company?userId=`**
-
-- id by query param
+**`GET /company`**
 
 **Response (200 Ok):**
 
@@ -332,7 +329,6 @@ Use to login in the system.
 
 **Request body:**
 
-- userId -> string UUID
 - name -> string
 - color -> hex
 - email -> string
@@ -344,7 +340,6 @@ Use to login in the system.
 
 ```json
 {
-  "userId": "f7e7373d-ab5f-4b95-b79d-6a172ad39a65",
   "name": "new name",
   "color": "#445760",
   "email": "example@example.com",
