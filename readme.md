@@ -75,6 +75,7 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
     - [POST create `register`](#create-client)
     - [GET all](#find-all-clients-by-company)
     - [GET by name](#find-clients-by-name)
+  - [Sale](#sale)
 
 ---
 
@@ -886,4 +887,54 @@ req: /client/Jho?companyId=ddfb3a99-1581-4017-9a1b-babccd4dc2e8
     "registeredAt": "2025-04-19T12:03:26.728Z"
   }
 ]
+```
+
+## Sale
+
+### Create sale
+
+A sale can receive a scheduleId to get it products and a arr of products.
+
+**`POST /sale`**
+
+**Request body:**
+
+- companyId -> string UUID
+- clientId -> string UUID
+- total -> number
+- scheduleId -> string UUID | null
+- products -> obj OPTIONAL
+
+```json
+products: [
+  {
+    "productId": "7a38386d-ddb2-43e9-99fa-bd97303f3fb9",
+    "quantity": 1,
+    "discount": 0
+  }
+],
+
+```
+
+Example:
+
+```json
+{
+  "companyId": "ddfb3a99-1581-4017-9a1b-babccd4dc2e8",
+  "clientId": "e3e31b28-178c-4059-a886-b0dd44eba8fe",
+  "total": 401.12,
+  "products": [
+    {
+      "productId": "eb716111-aff3-497d-9d6a-d5cbe45f7699",
+      "quantity": 2,
+      "discount": 0
+    }
+  ]
+}
+```
+
+**Response (201 CREATED):**
+
+```json
+
 ```
