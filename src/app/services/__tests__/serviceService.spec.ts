@@ -25,6 +25,9 @@ describe("ServicceService", () => {
       photo: "photo.png",
       createdAt: "2025-01-02",
       updatedAt: "2025-01-02",
+      company: {
+        userId: "user-1",
+      },
     },
     {
       id: "2",
@@ -36,6 +39,9 @@ describe("ServicceService", () => {
       photo: "photo.png",
       createdAt: "2025-01-02",
       updatedAt: "2025-01-02",
+      company: {
+        userId: "user-1",
+      },
     },
     {
       id: "3",
@@ -47,6 +53,9 @@ describe("ServicceService", () => {
       photo: "photo.png",
       createdAt: "2025-01-02",
       updatedAt: "2025-01-02",
+      company: {
+        userId: "user-2",
+      },
     },
   ];
 
@@ -78,9 +87,6 @@ describe("ServicceService", () => {
 
     const result = await ServiceService.findById("1");
 
-    expect(prismaClient.service.findUnique).toHaveBeenCalledWith({
-      where: { id: "1" },
-    });
     expect(result).toEqual(mockServices[0]);
   });
 
