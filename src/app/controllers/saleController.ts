@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
+import { getUserId } from "../helper/getUserId";
 import { ClientService } from "../services/clientService";
 import { CompanyService } from "../services/companyService";
 import { SaleService } from "../services/saleService";
@@ -25,6 +26,7 @@ export class SaleController {
     });
 
     const body = schema.parse(request.body);
+    const userId = getUserId(request);
 
     try {
       const client = await ClientService.findById(body.clientId);
@@ -36,6 +38,10 @@ export class SaleController {
 
       if (!company) {
         return reply.code(404).send({ message: "Company not found" });
+      }
+
+      if (company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
       }
 
       if (body.scheduleId) {

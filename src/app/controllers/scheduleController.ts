@@ -2,6 +2,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { differenceInMinutes } from "date-fns";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
+import { getUserId } from "../helper/getUserId";
 import { prismaClient } from "../lib/prismaClient";
 import { AvailableScheduleService } from "../services/availableScheduleService";
 import { ClientService } from "../services/clientService";
@@ -33,6 +34,7 @@ export class ScheduleController {
     });
 
     const body = schema.parse(request.body);
+    const userId = getUserId(request);
 
     try {
       // Verify if company exists
@@ -50,6 +52,10 @@ export class ScheduleController {
 
       if (!client) {
         return reply.code(404).send({ message: "Client not found" });
+      }
+
+      if (company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
       }
 
       if (!availableSchedule) {
@@ -152,7 +158,15 @@ export class ScheduleController {
       })
       .parse(request.query);
 
+    const userId = getUserId(request);
+
     try {
+      const company = await CompanyService.findById(companyId);
+
+      if (!company || company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
+      }
+
       const schedules = await ScheduleService.findAll(companyId);
 
       return reply.status(200).send(schedules);
@@ -168,8 +182,14 @@ export class ScheduleController {
       })
       .parse(request.params);
 
+    const userId = getUserId(request);
+
     try {
       const schedule = await ScheduleService.findById(id);
+
+      if (schedule?.company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
+      }
 
       if (!schedule) {
         return reply.code(404).send({ message: "Schedule not found" });
@@ -188,11 +208,17 @@ export class ScheduleController {
       })
       .parse(request.params);
 
+    const userId = getUserId(request);
+
     try {
       const schedule = await ScheduleService.findById(id);
 
       if (!schedule) {
         return reply.code(404).send({ message: "Schedule not found" });
+      }
+
+      if (schedule.company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
       }
 
       await Promise.all([
