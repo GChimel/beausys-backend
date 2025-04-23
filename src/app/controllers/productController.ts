@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
+import { getUserId } from "../helper/getUserId";
 import { CompanyService } from "../services/companyService";
 import { ProductService } from "../services/productService";
 
@@ -15,12 +16,14 @@ const schema = z.object({
 export class ProductController {
   static async create(request: FastifyRequest, reply: FastifyReply) {
     const body = schema.parse(request.body);
+    const userId = getUserId(request);
+
     try {
       // Verify if company exists
       const company = await CompanyService.findById(body.companyId);
 
-      if (!company) {
-        return reply.code(404).send({ message: "Company not found" });
+      if (!company || company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
       }
 
       const product = await ProductService.create({
@@ -41,12 +44,19 @@ export class ProductController {
         id: z.string().uuid(),
       })
       .parse(request.params);
+    const userId = getUserId(request);
 
     try {
       const product = await ProductService.findById(id);
 
       if (!product) {
         return reply.code(404).send({ message: "Product not found" });
+      }
+
+      const company = await CompanyService.findById(product?.companyId);
+
+      if (!company || company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
       }
 
       return reply.status(200).send(product);
@@ -62,12 +72,14 @@ export class ProductController {
       })
       .parse(request.query);
 
+    const userId = getUserId(request);
+
     try {
       // Verify if company exists
       const company = await CompanyService.findById(companyId);
 
-      if (!company) {
-        return reply.code(404).send({ message: "Company not found" });
+      if (!company || company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
       }
 
       const products = await ProductService.findAll(companyId);
@@ -85,12 +97,20 @@ export class ProductController {
       })
       .parse(request.params);
 
+    const userId = getUserId(request);
+
     try {
       // Verify if product exists
       const product = await ProductService.findById(id);
 
       if (!product) {
         return reply.code(404).send({ message: "Product not found" });
+      }
+
+      const company = await CompanyService.findById(product.companyId);
+
+      if (!company || company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
       }
 
       await ProductService.delete(id);
@@ -109,6 +129,7 @@ export class ProductController {
       .parse(request.params);
 
     const body = schema.parse(request.body);
+    const userId = getUserId(request);
 
     try {
       // Verify if product exists
@@ -116,6 +137,12 @@ export class ProductController {
 
       if (!product) {
         return reply.code(404).send({ message: "Product not found" });
+      }
+
+      const company = await CompanyService.findById(product.companyId);
+
+      if (!company || company.userId !== userId) {
+        return reply.code(403).send({ message: "Forbidden" });
       }
 
       const updatedProduct = await ProductService.update(id, body);
