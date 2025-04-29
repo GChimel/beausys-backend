@@ -2,6 +2,7 @@ import { compare, hash } from "bcryptjs";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { getUserId } from "../helper/getUserId";
+import { AbacatePayService } from "../services/abacatePayService";
 import { UserService } from "../services/userService";
 
 export class UserController {
@@ -21,9 +22,8 @@ export class UserController {
       cellPhone: z.string(),
     });
 
-    const { name, email, password, cellPhone, new_password } = schema.parse(
-      request.body
-    );
+    const { name, email, password, cellPhone, new_password, taxId } =
+      schema.parse(request.body);
 
     try {
       const emailExists = await UserService.findByEmail(email);
@@ -50,8 +50,21 @@ export class UserController {
         name,
         email,
         cellPhone,
+        taxId,
         password: hashPassword,
       });
+
+      // Update user in AbacatePay
+      try {
+        await AbacatePayService.createUser({
+          name,
+          email,
+          cellphone: cellPhone,
+          taxId,
+        });
+      } catch (error) {
+        console.error("Failed to update user in AbacatePay:", error);
+      }
 
       return reply.code(200).send(updatedUser);
     } catch (error) {

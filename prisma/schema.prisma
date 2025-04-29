@@ -16,6 +16,7 @@ model User {
   taxId     String?  @map("tax_id")
   createdAt DateTime @default(now()) @map("created_at")
   googleId  String?  @unique @map("google_id")
+  abacateId String?  @unique @map("abacate_id")
 
   RefreshToken RefreshToken[]
   Subscription Subscription[]

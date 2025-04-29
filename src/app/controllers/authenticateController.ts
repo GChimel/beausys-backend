@@ -4,6 +4,7 @@ import { z } from "zod";
 import { ENV_VARS } from "../config/env";
 import { AuthenticationError } from "../errors/authenticateError";
 import { prismaClient } from "../lib/prismaClient";
+import { AbacatePayService } from "../services/abacatePayService";
 import { GoogleApis } from "../services/googleApis";
 import { RefreshTokenService } from "../services/refreshTokenService";
 import { UserService } from "../services/userService";
@@ -63,9 +64,13 @@ export class AuhtenticateController {
       name: z.string().min(4),
       email: z.string().email(),
       password: z.string().min(6),
+      taxId: z.string().min(11),
+      cellPhone: z.string().min(10),
     });
 
-    const { email, password, name } = schema.parse(request.body);
+    const { email, password, name, taxId, cellPhone } = schema.parse(
+      request.body
+    );
 
     try {
       const userExists = await UserService.findByEmail(email);
@@ -83,7 +88,39 @@ export class AuhtenticateController {
         name,
         email,
         password: hashedPassword,
+        taxId,
+        cellPhone,
       });
+
+      // Create user in AbacatePay
+      try {
+        const abacateUser = await AbacatePayService.createUser({
+          name,
+          email,
+          cellphone: cellPhone,
+          taxId,
+        });
+
+        await prismaClient.user.update({
+          where: { id: user.id },
+          data: { abacateId: abacateUser.data.id },
+        });
+
+        // Create trial subscription
+        const trialEndDate = new Date();
+        trialEndDate.setDate(trialEndDate.getDate() + 15);
+
+        await prismaClient.subscription.create({
+          data: {
+            userId: user.id,
+            status: "TRIAL",
+            amount: 0,
+            nextBilling: trialEndDate,
+          },
+        });
+      } catch (error) {
+        console.error("Failed to create user in AbacatePay:", error);
+      }
 
       const accessToken = await reply.jwtSign({
         sub: user.id,
