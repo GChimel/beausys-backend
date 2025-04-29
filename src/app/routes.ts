@@ -7,7 +7,9 @@ import { ProductController } from "./controllers/productController";
 import { SaleController } from "./controllers/saleController";
 import { ScheduleController } from "./controllers/scheduleController";
 import { ServiceController } from "./controllers/serviceController";
+import { SubscriptionController } from "./controllers/subscriptionController";
 import { UserController } from "./controllers/userController";
+import { WebhookController } from "./controllers/webhookController";
 import { authMiddleware } from "./middlewares/authMiddleware";
 
 export async function publicRoutes(fastify: FastifyInstance) {
@@ -15,6 +17,9 @@ export async function publicRoutes(fastify: FastifyInstance) {
   fastify.post("/auth/sign-up", AuhtenticateController.signUp);
   fastify.post("/auth/sign-in", AuhtenticateController.signIn);
   fastify.post("/auth/refresh-token", AuhtenticateController.refreshToken);
+
+  // Webhook route (no authentication required)
+  fastify.post("/webhook/payment", WebhookController.handlePayment);
 }
 
 export async function privateRoutes(fastify: FastifyInstance) {
@@ -23,6 +28,11 @@ export async function privateRoutes(fastify: FastifyInstance) {
   // User routes
   fastify.put("/user/:id", UserController.update);
   fastify.get("/user/:id", UserController.findById);
+
+  // Subscription routes
+  fastify.post("/subscription/trial", SubscriptionController.createTrial);
+  fastify.get("/subscription/status", SubscriptionController.getStatus);
+  fastify.post("/subscription/billing", SubscriptionController.createBilling);
 
   // Company routes
   fastify.post("/company", CompanyController.create);

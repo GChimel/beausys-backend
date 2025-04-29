@@ -11,6 +11,7 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
 
 - User registration, authentication, and token refresh
 - Profile management (update user information)
+- Automatic synchronization with AbacatePay payment gateway
 
 ### Company Management
 
@@ -31,6 +32,13 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
 - Customers can book services
 - View and manage scheduled appointments
 
+### Payment Integration
+
+- Integrated with AbacatePay payment gateway
+- Automatic user synchronization with payment system
+- Support for PIX payments
+- Payment status tracking
+
 ## Endpoints
 
 - [Without authentication](#without-authentication)
@@ -43,6 +51,11 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
 
   - All of these requests require a **Bearer Token** in the `Authorization` header. The `sub` of the toke is used to verify if the operation is valid or not.
 
+  - [Subscription](#subscription)
+    - [POST create trial](#create-trial-subscription)
+    - [GET status](#get-subscription-status)
+    - [POST create billing](#create-billing)
+    - [Webhook integration](#webhook-integration)
   - [User](#user)
     - [GET by id](#user-by-id)
     - [PUT](#update-user)
@@ -77,8 +90,6 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
     - [GET by name](#find-clients-by-name)
   - [Sale](#sale)
 
----
-
 ## Without authentication
 
 ## Auth and register
@@ -87,7 +98,7 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
 
 **`POST /auth/sign-up`**
 
-Creates a new user and return a `JWT` and `REFRESH_TOKEN`.
+Creates a new user and return a `JWT` and `REFRESH_TOKEN`. Also creates the user in AbacatePay payment gateway.
 
 **Request body:**
 
@@ -95,7 +106,9 @@ Creates a new user and return a `JWT` and `REFRESH_TOKEN`.
 {
   "name": "John Doe",
   "email": "john@example.com",
-  "password": "123456"
+  "password": "123456",
+  "taxId": "12345678909",
+  "cellPhone": "42999999999"
 }
 ```
 
@@ -168,6 +181,160 @@ Use to login in the system.
 
 ### With authentication
 
+## Subscription System
+
+The platform implements a subscription-based model with a 15-day free trial period. Here's how it works:
+
+### Trial Period
+
+- When a user signs up, they automatically get a 15-day free trial
+- During the trial period, users have full access to all features
+- The trial status is tracked in the subscription system
+
+### Subscription Status
+
+The subscription can have the following statuses:
+
+- `TRIAL`: User is in the 15-day free trial period
+- `PENDING`: Payment has been initiated but not yet confirmed
+- `ACTIVE`: Payment has been confirmed and subscription is active
+- `FAILED`: Payment has failed or subscription has expired
+
+### Payment Integration
+
+The system is integrated with AbacatePay payment gateway for handling subscriptions. The payment flow works as follows:
+
+1. **Trial Period**:
+
+   - User signs up and gets 15 days of free access
+   - System creates a trial subscription record
+   - User is registered with AbacatePay
+
+2. **Subscription Renewal**:
+
+   - Before trial ends, user can create a billing
+   - System creates a PIX billing in AbacatePay
+   - User completes payment through AbacatePay's PIX interface
+
+3. **Payment Processing**:
+   - AbacatePay sends webhook notifications for billing events
+   - System updates subscription status based on billing events
+   - Subscription is renewed for the next billing period
+
+### Subscription Endpoints
+
+#### Create Trial Subscription
+
+**`POST /subscription/trial`**
+
+Creates a new trial subscription for the authenticated user.
+
+**Response (201 Created):**
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "userId": "7db9e84a-437c-4b0b-af2f-05977157bcb4",
+  "status": "TRIAL",
+  "amount": 0,
+  "nextBilling": "2025-04-15T09:41:40.338Z",
+  "createdAt": "2025-03-31T09:41:40.338Z",
+  "updatedAt": "2025-03-31T09:41:40.338Z"
+}
+```
+
+#### Get Subscription Status
+
+**`GET /subscription/status`**
+
+Gets the current subscription status for the authenticated user.
+
+**Response (200 Ok):**
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "userId": "7db9e84a-437c-4b0b-af2f-05977157bcb4",
+  "status": "ACTIVE",
+  "amount": 99.9,
+  "nextBilling": "2025-05-15T09:41:40.338Z",
+  "createdAt": "2025-03-31T09:41:40.338Z",
+  "updatedAt": "2025-04-15T09:41:40.338Z"
+}
+```
+
+#### Create Billing
+
+**`POST /subscription/billing`**
+
+Creates a new PIX billing for subscription renewal.
+
+**Request body:**
+
+```json
+{
+  "amount": 99.9,
+  "returnUrl": "https://your-app.com/return",
+  "completionUrl": "https://your-app.com/completion"
+}
+```
+
+**Response (201 Created):**
+
+```json
+{
+  "subscription": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "userId": "7db9e84a-437c-4b0b-af2f-05977157bcb4",
+    "status": "PENDING",
+    "amount": 99.9,
+    "nextBilling": "2025-05-15T09:41:40.338Z",
+    "createdAt": "2025-03-31T09:41:40.338Z",
+    "updatedAt": "2025-03-31T09:41:40.338Z"
+  },
+  "billing": {
+    "id": "bill_123456",
+    "url": "https://pay.abacatepay.com/bill-5678",
+    "amount": 9990,
+    "status": "PENDING",
+    "methods": ["PIX"],
+    "products": [
+      {
+        "id": "prod_123456",
+        "externalId": "sub_7db9e84a-437c-4b0b-af2f-05977157bcb4",
+        "quantity": 1
+      }
+    ],
+    "frequency": "ONE_TIME",
+    "nextBilling": null
+  }
+}
+```
+
+### Webhook Integration
+
+The system provides a webhook endpoint for AbacatePay to send billing notifications:
+
+**`POST /webhook/payment`**
+
+**Request body:**
+
+```json
+{
+  "event": "billing.paid",
+  "data": {
+    "billingId": "bill_123456",
+    "status": "paid",
+    "customerId": "cust_123456"
+  }
+}
+```
+
+The webhook handles the following events:
+
+- `billing.paid`: Updates subscription to ACTIVE status
+- `billing.failed`: Updates subscription to FAILED status
+
 ## User
 
 ### User by id
@@ -192,6 +359,8 @@ Use to login in the system.
 ### Update user
 
 **`PUT /user/:id`**
+
+Updates user information and synchronizes with AbacatePay payment gateway.
 
 **Request body:**
 
@@ -872,7 +1041,7 @@ req: /client/Jho?companyId=ddfb3a99-1581-4017-9a1b-babccd4dc2e8
 [
   {
     "id": "e3e31b28-178c-4059-a886-b0dd44eba8fe",
-+    "companyId": "ddfb3a99-1581-4017-9a1b-babccd4dc2e8",
+    "companyId": "ddfb3a99-1581-4017-9a1b-babccd4dc2e8",
     "name": "Jhon",
     "email": "jhon@example.com",
     "password": "$2b$08$pIZ0pz0v4iKqchbC71yqYuEJjqephkdvz9/ZYFrxSwjhZlGoWEllO",
