@@ -30,10 +30,7 @@ export class ClientController {
       }
 
       // Verify if client email already exists
-      const emailExists = await ClientService.findByEmail(
-        body.companyId,
-        body.email
-      );
+      const emailExists = await ClientService.findByEmail(body.email);
 
       if (emailExists) {
         return reply.code(400).send({ message: "Email already exists" });

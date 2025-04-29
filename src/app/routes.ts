@@ -4,6 +4,7 @@ import { AvailableScheduleController } from "./controllers/availableScheduleCont
 import { ClientController } from "./controllers/clientController";
 import { CompanyController } from "./controllers/companyController";
 import { ProductController } from "./controllers/productController";
+import { ReportController } from "./controllers/reportController";
 import { SaleController } from "./controllers/saleController";
 import { ScheduleController } from "./controllers/scheduleController";
 import { ServiceController } from "./controllers/serviceController";
@@ -73,4 +74,7 @@ export async function privateRoutes(fastify: FastifyInstance) {
 
   // Sale routes
   fastify.post("/sale", SaleController.create);
+
+  // Report routes
+  fastify.get("/report/schedule-summary", ReportController.scheduleSummary);
 }
