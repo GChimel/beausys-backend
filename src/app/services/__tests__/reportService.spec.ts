@@ -94,8 +94,6 @@ describe("ReportService", () => {
 
       const response = await ReportService.serviceSummary(companyId);
 
-      console.log(response.totalServices);
-
       expect(response.services).toEqual([
         {
           id: "1",

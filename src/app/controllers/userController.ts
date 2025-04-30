@@ -95,7 +95,6 @@ export class UserController {
 
       return reply.status(200).send(user);
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }

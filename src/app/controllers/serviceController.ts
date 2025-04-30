@@ -22,8 +22,6 @@ export class ServiceController {
       // Verify if company exists
       const company = await CompanyService.findById(body.companyId);
 
-      console.log(company);
-
       if (!company) {
         return reply.code(404).send({ message: "Company not found" });
       }

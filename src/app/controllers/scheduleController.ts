@@ -65,7 +65,6 @@ export class ScheduleController {
       }
 
       if (body.products) {
-        console.log("aqui");
         for (const product of body.products) {
           // Verify if product exists
           const productExists = await ProductService.findById(
