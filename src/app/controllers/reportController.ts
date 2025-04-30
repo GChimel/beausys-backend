@@ -21,4 +21,40 @@ export class ReportController {
 
     return reply.status(200).send(report);
   }
+
+  static async productStock(request: FastifyRequest, reply: FastifyReply) {
+    const schema = z.object({
+      companyId: z.string().uuid(),
+    });
+
+    const { companyId } = schema.parse(request.query);
+
+    const report = await ReportService.productStock(companyId);
+
+    return reply.status(200).send(report);
+  }
+
+  static async serviceSummary(request: FastifyRequest, reply: FastifyReply) {
+    const schema = z.object({
+      companyId: z.string().uuid(),
+    });
+
+    const { companyId } = schema.parse(request.query);
+
+    const report = await ReportService.serviceSummary(companyId);
+
+    return reply.status(200).send(report);
+  }
+
+  static async clientSummary(request: FastifyRequest, reply: FastifyReply) {
+    const schema = z.object({
+      companyId: z.string().uuid(),
+    });
+
+    const { companyId } = schema.parse(request.query);
+
+    const report = await ReportService.clientSummary(companyId);
+
+    return reply.status(200).send(report);
+  }
 }

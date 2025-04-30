@@ -77,4 +77,7 @@ export async function privateRoutes(fastify: FastifyInstance) {
 
   // Report routes
   fastify.get("/report/schedule-summary", ReportController.scheduleSummary);
+  fastify.get("/report/product-stock", ReportController.productStock);
+  fastify.get("/report/service-summary", ReportController.serviceSummary);
+  fastify.get("/report/client-summary", ReportController.clientSummary);
 }
