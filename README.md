@@ -89,6 +89,11 @@ Beausys is a SaaS platform designed to facilitate service scheduling and sales m
     - [GET all](#find-all-clients-by-company)
     - [GET by name](#find-clients-by-name)
   - [Sale](#sale)
+  - [Reports](#reports)
+    - [GET schedule summary](#schedule-summary)
+    - [GET product stock](#product-stock)
+    - [GET service summary](#service-summary)
+    - [GET client summary](#client-summary)
 
 ## Without authentication
 
@@ -1101,4 +1106,119 @@ Example:
 
 ```json
 
+```
+
+## Reports
+
+### Schedule Summary
+
+**`GET /report/schedule-summary`**
+
+Get a summary of schedules for a company within a date range.
+
+**Query parameters:**
+
+```json
+{
+  "companyId": "550e8400-e29b-41d4-a716-446655440000",
+  "startDate": "2024-03-01",
+  "endDate": "2024-03-31"
+}
+```
+
+**Response (200 Ok):**
+
+```json
+{
+  "totalSchedules": 10
+}
+```
+
+### Product Stock
+
+**`GET /report/product-stock`**
+
+Get a summary of product stock for a company.
+
+**Query parameters:**
+
+```json
+{
+  "companyId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+**Response (200 Ok):**
+
+```json
+{
+  "products": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "Product Name",
+      "quantity": 10,
+      "price": 99.99
+    }
+  ],
+  "totalProducts": 1
+}
+```
+
+### Service Summary
+
+**`GET /report/service-summary`**
+
+Get a summary of services for a company.
+
+**Query parameters:**
+
+```json
+{
+  "companyId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+**Response (200 Ok):**
+
+```json
+{
+  "services": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "Service Name",
+      "price": 99.99
+    }
+  ],
+  "totalServices": 1
+}
+```
+
+### Client Summary
+
+**`GET /report/client-summary`**
+
+Get a summary of clients for a company.
+
+**Query parameters:**
+
+```json
+{
+  "companyId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+**Response (200 Ok):**
+
+```json
+{
+  "clients": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "Client Name",
+      "email": "client@example.com",
+      "cellPhone": "42999999999"
+    }
+  ],
+  "totalClients": 1
+}
 ```
